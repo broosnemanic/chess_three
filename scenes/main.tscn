@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://bw0rhxbg2y5hf"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_jfv3b"]
+[ext_resource type="Script" path="res://scripts/game_control.gd" id="2_bgr0g"]
+[ext_resource type="Script" path="res://scripts/board.gd" id="3_ulksu"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_jfv3b")
+
+[node name="GameControl" type="Node" parent="."]
+script = ExtResource("2_bgr0g")
+
+[node name="Board" type="Node2D" parent="GameControl"]
+script = ExtResource("3_ulksu")
+
+[node name="BoardCamera" type="Camera2D" parent="GameControl/Board"]
+ignore_rotation = false
