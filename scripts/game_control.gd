@@ -3,8 +3,8 @@ extends Node
 ## Object for coordination between other game objects
 ## Relay for signals between abstract game and display
 
-@onready var board: Node2D = $Board
-@onready var camera: Camera2D = $Board/BoardCamera
+@onready var board: Node2D = %Board
+@onready var camera: Camera2D = %BoardCamera
 
 var composition: Composition		# Abstract representation of a game
 var match_finder: MatchFinder

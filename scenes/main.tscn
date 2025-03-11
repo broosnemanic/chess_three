@@ -10,8 +10,17 @@ script = ExtResource("1_jfv3b")
 [node name="GameControl" type="Node" parent="."]
 script = ExtResource("2_bgr0g")
 
-[node name="Board" type="Node2D" parent="GameControl"]
+[node name="SubViewportContainer" type="SubViewportContainer" parent="GameControl"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SubViewport" type="SubViewport" parent="GameControl/SubViewportContainer"]
+physics_object_picking = true
+
+[node name="Board" type="Node2D" parent="GameControl/SubViewportContainer/SubViewport"]
+unique_name_in_owner = true
 script = ExtResource("3_ulksu")
 
-[node name="BoardCamera" type="Camera2D" parent="GameControl/Board"]
+[node name="BoardCamera" type="Camera2D" parent="GameControl/SubViewportContainer/SubViewport/Board"]
+unique_name_in_owner = true
 ignore_rotation = false
