@@ -4,7 +4,8 @@ extends Node
 ## Relay for signals between abstract game and display
 
 @onready var board: Node2D = %Board
-@onready var camera: Camera2D = %BoardCamera
+@onready var board_camera: Camera2D = %BoardCamera
+@onready var p_container: PanelContainer = %ViewportPanelContainer
 
 var composition: Composition		# Abstract representation of a game
 var match_finder: MatchFinder
@@ -17,13 +18,33 @@ func _ready():
 	size = TEST_SIZE
 	composition = test_composition()
 	match_finder = MatchFinder.new(composition)
+	position_viewport()
 	board.setup(composition._abst_board)
 	board.display_piece_set(composition._internal)
 	board.square_clicked.connect(on_square_clicked)
+	position_board()
 	reset_camera()
 	slide(composition, composition.down)
 	#slide_test(t_comp)
 	#composition_test()
+
+
+func position_viewport():
+	var t_width: float = get_viewport().size.x
+	var t_height: float = get_viewport().size.y
+	var t_size: Vector2 = Vector2(t_width, t_width)
+	t_height = (t_height / 2.0) - t_width
+	p_container.size = Vector2(t_width, t_width)
+	p_container.position = Vector2(- t_width / 2.0, t_height)
+	%BoardSubViewport.size = t_size
+
+
+func position_board():
+	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
+	var t_delta: float = t_board_width / 2.0
+	t_delta -= 0.5 * Constants.SQUARE_WIDTH		# board origin is in *center* of upper left tile
+	board.position = Vector2(-t_delta, -t_delta)
+
 
 
 # Get key presses
@@ -43,10 +64,10 @@ func rotate_board(a_is_clockwise: bool):
 	board_rotation += 1 if a_is_clockwise else -1
 	var t_angle: float = board_rotation * TAU / 4
 	var rot_tween = get_tree().create_tween()
-	rot_tween.tween_property(camera, 'rotation', t_angle, 1.0)
+	rot_tween.tween_property(board_camera, 'rotation', t_angle, 1.0)
 	composition.rotate_down(a_is_clockwise)
 	var t_adj: float = 1.0 if a_is_clockwise else -1.0
-	board.rotate_pieces(camera.rotation + t_adj * PI/2.0)
+	board.rotate_pieces(board_camera.rotation + t_adj * PI/2.0)
 	do_slide()
 
 
@@ -107,9 +128,9 @@ func composition_test():
 
 func test_composition() -> Composition:
 	var t_comp: Composition = Composition._init_with_linear(Vector2i(size, size), random_linear_data(size * size))
-	place_stone(Vector2i(2, 2), t_comp)
-	place_stone(Vector2i(3, 0), t_comp)
-	place_stone(Vector2i(3, 5), t_comp)
+	#place_stone(Vector2i(2, 2), t_comp)
+	#place_stone(Vector2i(3, 0), t_comp)
+	#place_stone(Vector2i(3, 5), t_comp)
 	#t_comp._internal.out_at_width(8)
 	#t_comp._internal.put(null, Vector2i(0, 4))
 	#t_comp._internal.put(null, Vector2i(0, 0))
@@ -131,15 +152,28 @@ func random_linear_data(a_count: int) -> Array[GamePiece]:
 		t_data.append(t_piece)
 	return t_data
 
+# Note board_camera is a child of a subviewport - we want to center it within the viewport
+#func reset_camera():
+	##var t_corner_offset: Vector2 = Vector2(Constants.SQUARE_WIDTH / 2, Constants.SQUARE_WIDTH / 2)
+	#var t_corner_offset: Vector2 = 0.25 * Vector2(Constants.SQUARE_WIDTH, Constants.SQUARE_WIDTH)
+	#var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
+	#var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
+	#board_camera.zoom = Vector2(t_length / t_board_width, t_length / t_board_width)
+	#board_camera.offset = Vector2(t_board_width / 2.0, t_board_width / 2.0) + t_corner_offset
+	##camera.offset = Vector2(t_board_width / 2.0, t_board_width / 2.0)
 
+
+# Note board_camera is a child of a subviewport - we want to center it within the viewport
 func reset_camera():
-	var t_corner_offset: Vector2 = Vector2(Constants.SQUARE_WIDTH / 2, Constants.SQUARE_WIDTH / 2)
-	#camera.offset = Constants.SQUARE_WIDTH * Vector2(board.size.x / 2, board.size.y / 2) - 10 * t_corner_offset
-	var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
+	var t_width: float = %BoardSubViewport.size.x
+	#var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
 	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
-	camera.zoom = Vector2(t_length / t_board_width, t_length / t_board_width)
-	camera.offset = Vector2(t_board_width / 2.0, t_board_width / 2.0) - t_corner_offset
-
+	board_camera.zoom = Vector2(t_width / t_board_width, t_width / t_board_width)
+	board_camera.zoom = Vector2.ONE
+	var t_zoom: float =  t_width / t_board_width
+	board_camera.zoom = Vector2(t_zoom, t_zoom)
+	#board_camera.offset = Vector2(t_width, t_width)
+	pass
 
 # Update composition and board depending on selection state
 func on_square_clicked(a_square: Square):

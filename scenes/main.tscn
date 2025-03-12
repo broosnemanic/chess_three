@@ -1,26 +1,69 @@
-[gd_scene load_steps=4 format=3 uid="uid://bw0rhxbg2y5hf"]
+[gd_scene load_steps=7 format=3 uid="uid://bw0rhxbg2y5hf"]
 
 [ext_resource type="Script" uid="uid://c8fida5aajb62" path="res://scripts/main.gd" id="1_jfv3b"]
 [ext_resource type="Script" uid="uid://v6xxrbhcmp6j" path="res://scripts/game_control.gd" id="2_bgr0g"]
 [ext_resource type="Script" uid="uid://cm2q5n1dnor2b" path="res://scripts/board.gd" id="3_ulksu"]
+[ext_resource type="Script" uid="uid://cf26cgdrpdugi" path="res://scripts/scrolling_counter.gd" id="4_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://brvq3aidddijr" path="res://textures/number_strip.png" id="5_tefeu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jyhfs"]
+bg_color = Color(0.816223, 0.415576, 0.84836, 1)
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_jfv3b")
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 64.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScrollingCounter" type="HBoxContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+script = ExtResource("4_tbgi4")
+digit_texture = ExtResource("5_tefeu")
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
 [node name="GameControl" type="Node" parent="."]
 script = ExtResource("2_bgr0g")
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="GameControl"]
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="SubViewport" type="SubViewport" parent="GameControl/SubViewportContainer"]
-physics_object_picking = true
-
-[node name="Board" type="Node2D" parent="GameControl/SubViewportContainer/SubViewport"]
+[node name="ViewportPanelContainer" type="PanelContainer" parent="GameControl"]
 unique_name_in_owner = true
-script = ExtResource("3_ulksu")
+offset_right = 512.0
+offset_bottom = 512.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_jyhfs")
 
-[node name="BoardCamera" type="Camera2D" parent="GameControl/SubViewportContainer/SubViewport/Board"]
+[node name="BoardViewportContainer" type="SubViewportContainer" parent="GameControl/ViewportPanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="BoardSubViewport" type="SubViewport" parent="GameControl/ViewportPanelContainer/BoardViewportContainer"]
+unique_name_in_owner = true
+transparent_bg = true
+handle_input_locally = false
+physics_object_picking = true
+render_target_update_mode = 4
+
+[node name="BoardCamera" type="Camera2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
 unique_name_in_owner = true
 ignore_rotation = false
+
+[node name="Board" type="Node2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
+unique_name_in_owner = true
+script = ExtResource("3_ulksu")
