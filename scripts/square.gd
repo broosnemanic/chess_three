@@ -6,6 +6,7 @@ signal square_clicked(a_square: Square)
 @onready var selected: Sprite2D = $Selected
 @onready var piece: Sprite2D = $Piece
 @onready var stone: Sprite2D = $Stone
+@onready var hole: Sprite2D = $Hole
 @onready var highlight: Sprite2D = $Highlight
 @onready var background: Sprite2D = $Background
 
@@ -25,9 +26,9 @@ func _ready() -> void:
 func initialize(a_absract_square: AbstractSquare) -> void:
 	absract_square = a_absract_square
 	background.texture = Textures.square_texture(a_absract_square.type, a_absract_square.coords)
-	if a_absract_square.type == Lists.SQUARE_TYPE.STONE:
-		stone.visible = true
-		piece.visible = false
+	stone.visible = a_absract_square.is_stone()
+	hole.visible = a_absract_square.is_hole()
+	piece.visible = not (a_absract_square.is_stone() or a_absract_square.is_hole())
 
 
 func _input_event(_viewport, event, _shape_idx):

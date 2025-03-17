@@ -30,6 +30,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ScrollingCounter" type="HBoxContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("4_tbgi4")
 digit_texture = ExtResource("5_tefeu")
@@ -48,6 +49,9 @@ unique_name_in_owner = true
 offset_right = 512.0
 offset_bottom = 512.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_jyhfs")
+
+[node name="TextureRect" type="TextureRect" parent="GameControl/ViewportPanelContainer"]
+layout_mode = 2
 
 [node name="BoardViewportContainer" type="SubViewportContainer" parent="GameControl/ViewportPanelContainer"]
 unique_name_in_owner = true

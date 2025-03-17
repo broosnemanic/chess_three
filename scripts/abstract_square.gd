@@ -19,6 +19,10 @@ func is_stone() -> bool:
 	return type == Lists.SQUARE_TYPE.STONE
 
 # Convenience func
+func is_hole() -> bool:
+	return type == Lists.SQUARE_TYPE.HOLE
+
+# Convenience func
 func x():
 	return coords.x
 

@@ -146,11 +146,13 @@ func slide_moveset() -> Array[Move]:
 	# Down direction
 	var t_moveset: Array[Move] = []
 	var t_move: Move
-	var t_direction: int = 1 
-	#var t_start: Vector2i = Vector2i(0, 0)
+	var t_direction: int = 1
+	var t_hole_dict: Dictionary[int, int] = {}		# key is position; value is count of spaces below
 	var t_piece: GamePiece
 	var t_square: AbstractSquare
-	var t_space: int = 0
+	var t_space: int = 0		# Count of spaces so far
+	var t_holes: int = 0		# Count of holes so far
+	var t_distance: int = 0		# Holes plus spaces
 	if down == Vector2i.DOWN:
 		for i_x: int in range(size.x):
 			t_space = 0
@@ -162,17 +164,29 @@ func slide_moveset() -> Array[Move]:
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
 					continue
+				if t_square.type == Lists.SQUARE_TYPE.HOLE:
+					if t_space > 0:
+						t_holes += 1
+						t_hole_dict[t_y] = t_space
+					continue
 				if t_piece == null:
 					# We are assuming all squares are normal
 					t_space += 1
 				else:
+					t_distance = t_holes + t_space
 					t_move = Move.new(Vector2i(i_x, t_y),
-									Vector2i(i_x, t_y + t_direction * t_space),
+									Vector2i(i_x, t_y + t_direction * t_distance),
 									Lists.MOVE_TYPE.SLIDE,
 									t_piece,
 									null)
 					if not t_move.is_degenerate():
 						t_moveset.append(t_move)
+					for i_key: int in t_hole_dict.keys():
+						if t_hole_dict[i_key] == 1: 
+							t_holes = maxi(0, t_holes - 1)
+							t_hole_dict.erase(i_key)
+						else:
+							t_hole_dict[i_key] = maxi(0, t_hole_dict[i_key] - 1)
 	# Up direction
 	if down == Vector2i.UP:
 		t_direction = -1

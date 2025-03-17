@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://ba2plb8u1g0c7"]
+[gd_scene load_steps=7 format=3 uid="uid://ba2plb8u1g0c7"]
 
 [ext_resource type="Script" uid="uid://kuuch8yk0sm" path="res://scripts/square.gd" id="1_gv2rf"]
 [ext_resource type="Texture2D" uid="uid://lvf55r5sffo7" path="res://textures/board/highlight_01.png" id="2_rd51l"]
 [ext_resource type="Texture2D" uid="uid://beyw8i0unpqi0" path="res://textures/board/selected.png" id="3_8j3tx"]
 [ext_resource type="Texture2D" uid="uid://wbk35bcp3gvm" path="res://textures/board/stone.png" id="3_gjakn"]
+[ext_resource type="Texture2D" uid="uid://cl7mjk7gt3mx2" path="res://textures/board/LightTile.png" id="5_1a5g5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_oflee"]
 size = Vector2(128, 128)
@@ -15,6 +16,11 @@ script = ExtResource("1_gv2rf")
 shape = SubResource("RectangleShape2D_oflee")
 
 [node name="Background" type="Sprite2D" parent="."]
+
+[node name="Hole" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(0.388235, 0.615686, 0.784314, 1)
+texture = ExtResource("5_1a5g5")
 
 [node name="Highlight" type="Sprite2D" parent="."]
 visible = false

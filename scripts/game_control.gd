@@ -6,12 +6,15 @@ extends Node
 @onready var board: Node2D = %Board
 @onready var board_camera: Camera2D = %BoardCamera
 @onready var p_container: PanelContainer = %ViewportPanelContainer
+@onready var counter: ScrollingCounter = %ScrollingCounter
 
 var composition: Composition		# Abstract representation of a game
 var match_finder: MatchFinder
 var board_rotation: int = 0			# [0, 1, 2, or 3] 0 == up; then clockwise by 90 deg (PI/2 rad)
 var size: int						# Size of one side of board
-const TEST_SIZE: int = 8			# Keep board square; dif ratios can be faked using blocked off squares
+var score: int						# As it says
+var score_multi: int					# As it says
+const TEST_SIZE: int = 4			# Keep board square; dif ratios can be faked using blocked off squares
 
 
 func _ready():
@@ -27,6 +30,8 @@ func _ready():
 	slide(composition, composition.down)
 	#slide_test(t_comp)
 	#composition_test()
+	for i: int in range(10):
+		prints(str(i) + ":", fibo(i))
 
 
 func position_viewport():
@@ -65,10 +70,23 @@ func rotate_board(a_is_clockwise: bool):
 	var t_angle: float = board_rotation * TAU / 4
 	var rot_tween = get_tree().create_tween()
 	rot_tween.tween_property(board_camera, 'rotation', t_angle, 1.0)
+	
+	# This looks terrible and makes me nauseated :P
+	#var zoom_saved: Vector2 = board_camera.zoom
+	#var zoomout_tween = get_tree().create_tween()
+	#zoomout_tween.finished.connect(zoom_board_camera.bind(zoom_saved, 0.5))
+	#zoomout_tween.tween_property(board_camera, "zoom", board_camera.zoom / sqrt(2.0), 0.5)
+	
+	
 	composition.rotate_down(a_is_clockwise)
 	var t_adj: float = 1.0 if a_is_clockwise else -1.0
 	board.rotate_pieces(board_camera.rotation + t_adj * PI/2.0)
 	do_slide()
+
+
+func zoom_board_camera(a_zoom: Vector2, a_duration):
+	var zoom_tween = get_tree().create_tween()
+	zoom_tween.tween_property(board_camera, "zoom", a_zoom, 0.5)
 
 
 func slide_test(a_composition: Composition):
@@ -131,6 +149,9 @@ func test_composition() -> Composition:
 	#place_stone(Vector2i(2, 2), t_comp)
 	#place_stone(Vector2i(3, 0), t_comp)
 	#place_stone(Vector2i(3, 5), t_comp)
+	place_hole(Vector2i(0, 2), t_comp)
+	#place_hole(Vector2i(4, 3), t_comp)
+	#place_hole(Vector2i(3, 5), t_comp)
 	#t_comp._internal.out_at_width(8)
 	#t_comp._internal.put(null, Vector2i(0, 4))
 	#t_comp._internal.put(null, Vector2i(0, 0))
@@ -142,6 +163,11 @@ func test_composition() -> Composition:
 
 func place_stone(a_coord: Vector2i, a_composition: Composition):
 	a_composition.square_at(a_coord).type = Lists.SQUARE_TYPE.STONE
+	a_composition.put_piece_at(null, a_coord)
+
+
+func place_hole(a_coord: Vector2i, a_composition: Composition):
+	a_composition.square_at(a_coord).type = Lists.SQUARE_TYPE.HOLE
 	a_composition.put_piece_at(null, a_coord)
 
 
@@ -202,6 +228,7 @@ func on_square_clicked(a_square: Square):
 
 # Move a single piece (usually moved by player)
 func do_move(a_move: Move):
+	score_multi = 1		# Player move resets multiplier
 	composition.do_move(a_move)		# Happens in one frame
 	board.animate_move(a_move)		# Takes MOVE_DURATION seconds
 	await get_tree().create_timer(Constants.MOVE_DURATION).timeout
@@ -263,8 +290,28 @@ func fill_move_from_coord(a_coord: Vector2i) -> Move:
 
 # As it says
 func update_score_from_matches(a_matches: Array[Array]):
-	# TODO: Implement
-	pass
+	for i_set: Array[Vector2i] in a_matches:
+		var t_points: int = score_by_match_size(i_set.size())
+		t_points *= score_multi
+		score += t_points
+		prints(t_points, score_multi)
+		counter.display_points(t_points)
+		score_multi += 1
+
+
+
+# From https://gdscript.com/articles/godot-recursive-functions/
+func fibo(n):
+	# If n is 0 or 1 return 1  
+	if n < 2:
+		return 1
+	# Calculate the number
+	return fibo(n - 1) + fibo(n - 2)
+
+
+func score_by_match_size(a_size: int) -> int:
+	return fibo(a_size)
+	
 
 func print_composition():
 	composition._internal.out_at_width(8)
