@@ -14,7 +14,7 @@ var board_rotation: int = 0			# [0, 1, 2, or 3] 0 == up; then clockwise by 90 de
 var size: int						# Size of one side of board
 var score: int						# As it says
 var score_multi: int					# As it says
-const TEST_SIZE: int = 4			# Keep board square; dif ratios can be faked using blocked off squares
+const TEST_SIZE: int = 7			# Keep board square; dif ratios can be faked using blocked off squares
 
 
 func _ready():
@@ -149,9 +149,12 @@ func test_composition() -> Composition:
 	#place_stone(Vector2i(2, 2), t_comp)
 	#place_stone(Vector2i(3, 0), t_comp)
 	#place_stone(Vector2i(3, 5), t_comp)
+	
+	# With size 7 this crashes when down = RIGHT
 	place_hole(Vector2i(0, 2), t_comp)
-	#place_hole(Vector2i(4, 3), t_comp)
-	#place_hole(Vector2i(3, 5), t_comp)
+	place_hole(Vector2i(4, 3), t_comp)
+	place_hole(Vector2i(3, 5), t_comp)
+	#place_hole(Vector2i(1, 0), t_comp)
 	#t_comp._internal.out_at_width(8)
 	#t_comp._internal.put(null, Vector2i(0, 4))
 	#t_comp._internal.put(null, Vector2i(0, 0))

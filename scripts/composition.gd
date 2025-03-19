@@ -156,6 +156,8 @@ func slide_moveset() -> Array[Move]:
 	if down == Vector2i.DOWN:
 		for i_x: int in range(size.x):
 			t_space = 0
+			t_holes = 0
+			t_hole_dict = {}
 			for i_y: int in range(size.y):
 				# We want to count from the bottom up
 				var t_y: int = size.y - i_y - 1
@@ -192,6 +194,8 @@ func slide_moveset() -> Array[Move]:
 		t_direction = -1
 		for i_x: int in range(size.x):
 			t_space = 0
+			t_holes = 0
+			t_hole_dict = {}
 			for i_y: int in range(size.y):
 				# Now top down
 				t_piece = _internal.at_coord(i_x, i_y)
@@ -199,22 +203,42 @@ func slide_moveset() -> Array[Move]:
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
 					continue
+				if t_square.type == Lists.SQUARE_TYPE.HOLE:
+					if t_space > 0:
+						t_holes += 1
+						t_hole_dict[i_y] = t_space
+					continue
 				if t_piece == null:
 					# We are assuming all squares are normal
 					t_space += 1
 				else:
+					t_distance = t_holes + t_space
 					t_move = Move.new(Vector2i(i_x, i_y),
-									Vector2i(i_x, i_y + t_direction * t_space),
+									Vector2i(i_x, i_y + t_direction * t_distance),
 									Lists.MOVE_TYPE.SLIDE,
 									t_piece,
 									null)
+					#t_move = Move.new(Vector2i(i_x, i_y),
+									#Vector2i(i_x, i_y + t_direction * t_space),
+									#Lists.MOVE_TYPE.SLIDE,
+									#t_piece,
+									#null)
 					if not t_move.is_degenerate():
 						t_moveset.append(t_move)
+					for i_key: int in t_hole_dict.keys():
+						if t_hole_dict[i_key] == 1: 
+							t_holes = maxi(0, t_holes - 1)
+							t_hole_dict.erase(i_key)
+						else:
+							t_hole_dict[i_key] = maxi(0, t_hole_dict[i_key] - 1)
 	# Right direction
 	if down == Vector2i.RIGHT:
+		print("RIGHT")
 		t_direction = 1
 		for i_y: int in range(size.y):
 			t_space = 0
+			t_holes = 0
+			t_hole_dict = {}
 			for i_x: int in range(size.x):
 				# We want to count from left to right
 				var t_x: int = size.x - i_x - 1
@@ -223,22 +247,36 @@ func slide_moveset() -> Array[Move]:
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
 					continue
+				if t_square.type == Lists.SQUARE_TYPE.HOLE:
+					if t_space > 0:
+						t_holes += 1
+						t_hole_dict[t_x] = t_space
+					continue
 				if t_piece == null:
 					# We are assuming all squares are normal
 					t_space += 1
 				else:
+					t_distance = t_holes + t_space
 					t_move = Move.new(Vector2i(t_x, i_y),
-									Vector2i(t_x + t_direction * t_space, i_y),
+									Vector2i(t_x + t_direction * t_distance, i_y),
 									Lists.MOVE_TYPE.SLIDE,
 									t_piece,
 									null)
 					if not t_move.is_degenerate():
 						t_moveset.append(t_move)
+					for i_key: int in t_hole_dict.keys():
+						if t_hole_dict[i_key] == 1: 
+							t_holes = maxi(0, t_holes - 1)
+							t_hole_dict.erase(i_key)
+						else:
+							t_hole_dict[i_key] = maxi(0, t_hole_dict[i_key] - 1)
 	# Left direction
 	if down == Vector2i.LEFT:
 		t_direction = -1
 		for i_y: int in range(size.y):
 			t_space = 0
+			t_holes = 0
+			t_hole_dict = {}
 			for i_x: int in range(size.x):
 				# Now right to left
 				t_piece = _internal.at_coord(i_x, i_y)
@@ -246,18 +284,29 @@ func slide_moveset() -> Array[Move]:
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
 					continue
+				if t_square.type == Lists.SQUARE_TYPE.HOLE:
+					if t_space > 0:
+						t_holes += 1
+						t_hole_dict[i_x] = t_space
+					continue
 				if t_piece == null:
 					# We are assuming all squares are normal
 					t_space += 1
 				else:
+					t_distance = t_holes + t_space
 					t_move = Move.new(Vector2i(i_x, i_y),
-									Vector2i(i_x + t_direction * t_space, i_y),
+									Vector2i(i_x + t_direction * t_distance, i_y),
 									Lists.MOVE_TYPE.SLIDE,
 									t_piece,
 									null)
 					if not t_move.is_degenerate():
 						t_moveset.append(t_move)
-
+					for i_key: int in t_hole_dict.keys():
+						if t_hole_dict[i_key] == 1: 
+							t_holes = maxi(0, t_holes - 1)
+							t_hole_dict.erase(i_key)
+						else:
+							t_hole_dict[i_key] = maxi(0, t_hole_dict[i_key] - 1)
 	return t_moveset
 
 
