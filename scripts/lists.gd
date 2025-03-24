@@ -42,7 +42,6 @@ func piece_type_from_index(a_index: int) -> PIECE_TYPE:
 		7:
 			return PIECE_TYPE.STONE
 		_:
-			print_debug(a_index)
 			return PIECE_TYPE.PAWN
 
 

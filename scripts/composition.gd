@@ -165,6 +165,8 @@ func slide_moveset() -> Array[Move]:
 				t_square = square_at(Vector2i(i_x, t_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
+					t_holes = 0
+					t_hole_dict = {}
 					continue
 				if t_square.type == Lists.SQUARE_TYPE.HOLE:
 					if t_space > 0:
@@ -202,6 +204,8 @@ func slide_moveset() -> Array[Move]:
 				t_square = square_at(Vector2i(i_x, i_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
+					t_holes = 0
+					t_hole_dict = {}
 					continue
 				if t_square.type == Lists.SQUARE_TYPE.HOLE:
 					if t_space > 0:
@@ -246,6 +250,8 @@ func slide_moveset() -> Array[Move]:
 				t_square = square_at(Vector2i(t_x, i_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
+					t_holes = 0
+					t_hole_dict = {}
 					continue
 				if t_square.type == Lists.SQUARE_TYPE.HOLE:
 					if t_space > 0:
@@ -283,6 +289,8 @@ func slide_moveset() -> Array[Move]:
 				t_square = square_at(Vector2i(i_x, i_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
 					t_space = 0
+					t_holes = 0
+					t_hole_dict = {}
 					continue
 				if t_square.type == Lists.SQUARE_TYPE.HOLE:
 					if t_space > 0:
@@ -331,6 +339,7 @@ func fill_moveset() -> Array[Move]:
 					# as this runs after sliding
 					break
 				else:
+					if t_square.is_hole(): continue
 					t_move = Move.new(Vector2i(i_x, i_y - t_direction * size.y),
 									Vector2i(i_x, i_y),
 									Lists.MOVE_TYPE.FILL,
@@ -352,6 +361,7 @@ func fill_moveset() -> Array[Move]:
 					# as this runs after sliding
 					break
 				else:
+					if t_square.is_hole(): continue
 					t_move = Move.new(Vector2i(i_x, t_y - t_direction * size.y),
 									Vector2i(i_x, t_y),
 									Lists.MOVE_TYPE.FILL,
@@ -374,6 +384,7 @@ func fill_moveset() -> Array[Move]:
 					# as this runs after sliding
 					break
 				else:
+					if t_square.is_hole(): continue
 					t_move = Move.new(Vector2i(i_x - t_direction * size.x, i_y),
 									Vector2i(i_x, i_y),
 									Lists.MOVE_TYPE.SLIDE,
@@ -396,6 +407,7 @@ func fill_moveset() -> Array[Move]:
 					# as this runs after sliding
 					break
 				else:
+					if t_square.is_hole(): continue
 					t_move = Move.new(Vector2i(t_x - t_direction * size.x, i_y),
 									Vector2i(t_x, i_y),
 									Lists.MOVE_TYPE.SLIDE,

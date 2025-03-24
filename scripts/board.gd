@@ -3,6 +3,8 @@ extends Node2D
 ## Display of board and pieces - no game logic
 
 signal square_clicked(a_square: Square)	# Relays signal from a clicked square to game control
+signal move_animation_finished(a_move: Move)
+
 
 @onready var square_prefab: Resource = preload("res://scenes/square.tscn")
 
@@ -12,6 +14,11 @@ var squares: Array2DSquare				# Squares by coordinate (keeps track of special sq
 var pieces: Array2DGamePiece			# Pieces by cordinate
 # Array[Array[Move]]
 var animation_queue: Array[Array]		# List of sets of animations to be played sequentially
+
+
+#func _ready() -> void:
+	#var t_piece: PhysicsPiece = physics_piece_prefab.instantiate()
+	#add_child(t_piece)
 
 
 func setup(a_abst_board: Array2DAbstractSquare):
@@ -94,7 +101,7 @@ func animate_move(a_move: Move):
 	t_start.piece.z_index = 5
 	var tween = get_tree().create_tween().set_ease(Tween.EASE_IN)
 	var t_delta: Vector2 = Vector2(t_end.position - t_start.position)
-	var t_duration: float = a_move.animation_duration() *  distance(t_start.coords(), t_end.coords())
+	#var t_duration: float = a_move.animation_duration() *  distance(t_start.coords(), t_end.coords())
 	tween.tween_property(t_start.piece, 'position', t_delta, a_move.animation_duration())
 	tween.finished.connect(on_animated_move_finished.bind(a_move))
 
@@ -102,6 +109,7 @@ func animate_move(a_move: Move):
 # We have moved the actual Sprite2D from the start to the end square - 
 # We have to move that back, and display the correct pieces 
 func on_animated_move_finished(a_move: Move):
+	move_animation_finished.emit(a_move)
 	var t_start: Square = squares.at(a_move.start)
 	var t_end: Square = squares.at(a_move.end)
 	# Move start square sprite back to start square position, and clear

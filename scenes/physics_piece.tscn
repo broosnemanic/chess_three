@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://wjsr4tjiudce"]
+
+[ext_resource type="Script" uid="uid://c2y4kgxefx1gx" path="res://scenes/physics_piece.gd" id="1_c2b3n"]
+[ext_resource type="Texture2D" uid="uid://b2twv4xcesine" path="res://textures/pieces/chess_knight_black.png" id="1_jqf8g"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c2b3n"]
+size = Vector2(122, 117)
+
+[node name="RigidBody2D" type="RigidBody2D"]
+script = ExtResource("1_c2b3n")
+
+[node name="PieceSprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_jqf8g")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_c2b3n")
+
+[node name="Node2D" type="Node2D" parent="."]

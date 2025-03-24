@@ -6,15 +6,25 @@ extends Node
 @onready var board: Node2D = %Board
 @onready var board_camera: Camera2D = %BoardCamera
 @onready var p_container: PanelContainer = %ViewportPanelContainer
+@onready var multi_display: RichTextLabel = %MultiDisplay
 @onready var counter: ScrollingCounter = %ScrollingCounter
+@onready var physics_piece_prefab = preload("res://scenes/physics_piece.tscn")
+
 
 var composition: Composition		# Abstract representation of a game
 var match_finder: MatchFinder
 var board_rotation: int = 0			# [0, 1, 2, or 3] 0 == up; then clockwise by 90 deg (PI/2 rad)
 var size: int						# Size of one side of board
 var score: int						# As it says
-var score_multi: int					# As it says
-const TEST_SIZE: int = 7			# Keep board square; dif ratios can be faked using blocked off squares
+var score_multi: int:
+		set(a_multi):
+			score_multi = a_multi
+			multi_display.text = get_multi_text(a_multi)
+func get_multi_text(a_multi: int) -> String:
+	return "[font_size=24]" + str(a_multi) + " X[/font_size]"
+	
+	
+const TEST_SIZE: int = 6			# Keep board square; dif ratios can be faked using blocked off squares
 
 
 func _ready():
@@ -25,13 +35,10 @@ func _ready():
 	board.setup(composition._abst_board)
 	board.display_piece_set(composition._internal)
 	board.square_clicked.connect(on_square_clicked)
+	board.move_animation_finished.connect(on_move_animation_finished)
 	position_board()
 	reset_camera()
 	slide(composition, composition.down)
-	#slide_test(t_comp)
-	#composition_test()
-	for i: int in range(10):
-		prints(str(i) + ":", fibo(i))
 
 
 func position_viewport():
@@ -49,7 +56,7 @@ func position_board():
 	var t_delta: float = t_board_width / 2.0
 	t_delta -= 0.5 * Constants.SQUARE_WIDTH		# board origin is in *center* of upper left tile
 	board.position = Vector2(-t_delta, -t_delta)
-
+	pass
 
 
 # Get key presses
@@ -57,10 +64,10 @@ func _input(event):
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
 			rotate_board(true)
-			print(composition.down)
+			print_debug(composition.down)
 		if event.keycode == KEY_L:
 			rotate_board(false)
-			print(composition.down)
+			print_debug(composition.down)
 
 
 # Increments roation by 1/4 turn
@@ -70,23 +77,67 @@ func rotate_board(a_is_clockwise: bool):
 	var t_angle: float = board_rotation * TAU / 4
 	var rot_tween = get_tree().create_tween()
 	rot_tween.tween_property(board_camera, 'rotation', t_angle, 1.0)
-	
-	# This looks terrible and makes me nauseated :P
-	#var zoom_saved: Vector2 = board_camera.zoom
-	#var zoomout_tween = get_tree().create_tween()
-	#zoomout_tween.finished.connect(zoom_board_camera.bind(zoom_saved, 0.5))
-	#zoomout_tween.tween_property(board_camera, "zoom", board_camera.zoom / sqrt(2.0), 0.5)
-	
-	
 	composition.rotate_down(a_is_clockwise)
+	#set_gravity_dir(board_rotation_to_vector(board_rotation))
+	#set_gravity_dir(composition.down)
 	var t_adj: float = 1.0 if a_is_clockwise else -1.0
 	board.rotate_pieces(board_camera.rotation + t_adj * PI/2.0)
 	do_slide()
 
 
-func zoom_board_camera(a_zoom: Vector2, a_duration):
-	var zoom_tween = get_tree().create_tween()
-	zoom_tween.tween_property(board_camera, "zoom", a_zoom, 0.5)
+# A_rot is the integer
+#func transformed_pos_from_board_rot(a_pos: Vector2) -> Vector2:
+	#var t_pos: Vector2
+	#match board_rotation:
+		#0:	# Default orientation
+			#t_pos = a_pos
+		#1:
+			#t_pos = Vector2(a_pos.y, -a_pos.x)
+		#2:
+			#t_pos = Vector2(-a_pos.x, -a_pos.y)
+		#3:
+			#t_pos = Vector2(-a_pos.y, a_pos.x)
+		#_:
+			#t_pos = Vector2.ZERO
+	#return t_pos
+			
+func transformed_pos_from_board_rot(a_pos: Vector2) -> Vector2:
+	var t_pos: Vector2
+	match composition.down:
+		Vector2i.DOWN:	# Default orientation
+			t_pos = a_pos
+		Vector2i.LEFT:
+			t_pos = Vector2(a_pos.y, -a_pos.x)
+		Vector2i.UP:
+			t_pos = Vector2(-a_pos.x, -a_pos.y)
+		Vector2i.RIGHT:
+			t_pos = Vector2(-a_pos.y, a_pos.x)
+		_:
+			t_pos = Vector2.ZERO
+	return t_pos
+			
+
+
+func board_rotation_to_vector(a_rot: int) -> Vector2:
+	var t_rot: int = a_rot % 4
+	if t_rot < 0:
+		t_rot = (t_rot + 4) % 4
+	# The above code translates any a_rot to be in the interval [0, 3]
+	match t_rot:
+		0:
+			print_debug(Vector2.RIGHT)
+			return Vector2i.DOWN
+		1:
+			print_debug(Vector2.UP)
+			return Vector2i.DOWN
+		2:
+			print_debug(Vector2.LEFT)
+			return Vector2i.DOWN
+		3:
+			print_debug(Vector2.DOWN)
+			return Vector2i.DOWN
+		_:
+			return Vector2i.DOWN
 
 
 func slide_test(a_composition: Composition):
@@ -149,11 +200,18 @@ func test_composition() -> Composition:
 	#place_stone(Vector2i(2, 2), t_comp)
 	#place_stone(Vector2i(3, 0), t_comp)
 	#place_stone(Vector2i(3, 5), t_comp)
-	
+	#place_hole(Vector2i(0, 2), t_comp)
+	#place_stone(Vector2i(0, 1), t_comp)
 	# With size 7 this crashes when down = RIGHT
-	place_hole(Vector2i(0, 2), t_comp)
-	place_hole(Vector2i(4, 3), t_comp)
-	place_hole(Vector2i(3, 5), t_comp)
+	#place_hole(Vector2i(0, 0), t_comp)
+	#place_hole(Vector2i(4, 3), t_comp)
+	#place_hole(Vector2i(3, 0), t_comp)
+	#place_hole(Vector2i(3, 1), t_comp)
+	#place_hole(Vector2i(3, 2), t_comp)
+	#place_stone(Vector2i(3, 3), t_comp)
+	#place_hole(Vector2i(3, 4), t_comp)
+	#place_hole(Vector2i(3, 5), t_comp)
+	#place_hole(Vector2i(3, 6), t_comp)
 	#place_hole(Vector2i(1, 0), t_comp)
 	#t_comp._internal.out_at_width(8)
 	#t_comp._internal.put(null, Vector2i(0, 4))
@@ -198,11 +256,33 @@ func reset_camera():
 	#var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
 	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
 	board_camera.zoom = Vector2(t_width / t_board_width, t_width / t_board_width)
-	board_camera.zoom = Vector2.ONE
+	#board_camera.zoom = Vector2.ONE
 	var t_zoom: float =  t_width / t_board_width
 	board_camera.zoom = Vector2(t_zoom, t_zoom)
 	#board_camera.offset = Vector2(t_width, t_width)
 	pass
+
+
+func on_move_animation_finished(a_move: Move):
+	if a_move == null or a_move.taken_piece == null:
+		return
+	toss_taken_piece(a_move)
+
+
+func toss_taken_piece(a_move: Move):
+	var t_square: Square = board.squares.at(a_move.end)
+	var t_pos: Vector2 = t_square.position + board.position +  Vector2(0, 0.125 * Constants.SQUARE_WIDTH)
+	
+	t_pos = transformed_pos_from_board_rot(t_pos) 
+	
+	t_pos = t_pos * board_camera.zoom
+	t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
+	var t_toss_piece: PhysicsPiece = physics_piece_prefab.instantiate()
+	#t_toss_piece.freeze = true
+	t_toss_piece.position = t_pos
+	add_child(t_toss_piece)
+	t_toss_piece.sprite.texture = Textures.piece_texture(a_move.taken_piece.type, a_move.taken_piece.color)
+	t_toss_piece.sprite.scale = board_camera.zoom * 0.85	# 0.85 is to match Square scaling
 
 # Update composition and board depending on selection state
 func on_square_clicked(a_square: Square):
@@ -231,7 +311,7 @@ func on_square_clicked(a_square: Square):
 
 # Move a single piece (usually moved by player)
 func do_move(a_move: Move):
-	score_multi = 1		# Player move resets multiplier
+	score_multi = maxi(1, score_multi - 1)		# Player move reduces multiplier
 	composition.do_move(a_move)		# Happens in one frame
 	board.animate_move(a_move)		# Takes MOVE_DURATION seconds
 	await get_tree().create_timer(Constants.MOVE_DURATION).timeout
@@ -293,13 +373,14 @@ func fill_move_from_coord(a_coord: Vector2i) -> Move:
 
 # As it says
 func update_score_from_matches(a_matches: Array[Array]):
+	var t_count: int = 0
 	for i_set: Array[Vector2i] in a_matches:
 		var t_points: int = score_by_match_size(i_set.size())
 		t_points *= score_multi
 		score += t_points
-		prints(t_points, score_multi)
 		counter.display_points(t_points)
-		score_multi += 1
+		t_count += i_set.size() - 1
+	score_multi += t_count	
 
 
 
@@ -320,3 +401,9 @@ func print_composition():
 	composition._internal.out_at_width(8)
 	print("____________________")
 	print("")
+
+
+# Sets direction of gravity
+# Note this is not for regualr piece movement but for flying depris / pieces
+func set_gravity_dir(a_dir: Vector2):
+	PhysicsServer2D.area_set_param(get_viewport().find_world_2d().space, PhysicsServer2D.AREA_PARAM_GRAVITY_VECTOR, a_dir)

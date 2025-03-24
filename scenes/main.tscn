@@ -35,6 +35,26 @@ layout_mode = 2
 script = ExtResource("4_tbgi4")
 digit_texture = ExtResource("5_tefeu")
 
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MultiDisplay" type="RichTextLabel" parent="CanvasLayer/VBoxContainer/HBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+bbcode_enabled = true
+text = "1 X"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="Panel" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
 [node name="Panel2" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
