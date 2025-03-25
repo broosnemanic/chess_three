@@ -14,8 +14,6 @@ func _ready() -> void:
 func toss():
 	var t_magnitude: float = randf_range(500.0, 1000.0)
 	var t_angle: float = randf_range(30.0, 150.0) * (PI / 180.0)
-	#var t_magnitude: float = randf_range(100.0, 100.0)
-	#var t_angle: float = randf_range(90.0, 90.0) * (PI / 180.0)
 	var t_avelocity: float = randf_range(-2 * PI, 2 * PI)
 	var v_x: float = t_magnitude * cos(t_angle)
 	var v_y: float = -t_magnitude * sin(t_angle)

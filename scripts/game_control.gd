@@ -271,18 +271,26 @@ func on_move_animation_finished(a_move: Move):
 
 func toss_taken_piece(a_move: Move):
 	var t_square: Square = board.squares.at(a_move.end)
-	var t_pos: Vector2 = t_square.position + board.position +  Vector2(0, 0.125 * Constants.SQUARE_WIDTH)
-	
-	t_pos = transformed_pos_from_board_rot(t_pos) 
-	
-	t_pos = t_pos * board_camera.zoom
-	t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
+	#var t_pos: Vector2 = t_square.position + board.position +  Vector2(0, 0.125 * Constants.SQUARE_WIDTH)
+	#t_pos = transformed_pos_from_board_rot(t_pos)
+	#t_pos = t_pos * board_camera.zoom
+	#t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
 	var t_toss_piece: PhysicsPiece = physics_piece_prefab.instantiate()
-	#t_toss_piece.freeze = true
-	t_toss_piece.position = t_pos
+	#t_toss_piece.position = t_pos
+	
+	t_toss_piece.position = global_pos_from_board_pos(t_square.position)
 	add_child(t_toss_piece)
 	t_toss_piece.sprite.texture = Textures.piece_texture(a_move.taken_piece.type, a_move.taken_piece.color)
 	t_toss_piece.sprite.scale = board_camera.zoom * 0.85	# 0.85 is to match Square scaling
+
+
+# Note this does not return the actual global value, but the value relative to the board viewport container
+func global_pos_from_board_pos(a_pos: Vector2) -> Vector2:
+	var t_pos: Vector2 = a_pos + board.position +  Vector2(0, 0.125 * Constants.SQUARE_WIDTH)
+	t_pos = transformed_pos_from_board_rot(t_pos)
+	t_pos = t_pos * board_camera.zoom
+	t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
+	return t_pos
 
 # Update composition and board depending on selection state
 func on_square_clicked(a_square: Square):
@@ -379,9 +387,29 @@ func update_score_from_matches(a_matches: Array[Array]):
 		t_points *= score_multi
 		score += t_points
 		counter.display_points(t_points)
+		display_floating_points(i_set, t_points)
 		t_count += i_set.size() - 1
 	score_multi += t_count	
 
+
+func display_floating_points(a_set: Array[Vector2i], a_points: int):
+	var t_pos: Vector2 = global_pos_from_board_pos(group_center_local_pos(a_set))
+	var t_label: ScoreLabel = ScoreLabel.new()
+	add_child(t_label)
+	t_label.initialize(t_pos, a_points)
+
+
+# Center coords for a set of coords; note output coords need not be int pair
+func group_center_local_pos(a_set: Array[Vector2i]) -> Vector2:
+	var t_xs: float
+	var t_ys: float
+	for i_coord: Vector2i in a_set:
+		var t_square: Square = board.squares.at(i_coord) 
+		t_xs += t_square.position.x
+		t_ys += t_square.position.y
+	var t_center: Vector2 = Vector2(t_xs, t_ys) / (a_set.size() as float)
+	print_debug(t_center)
+	return t_center
 
 
 # From https://gdscript.com/articles/godot-recursive-functions/
