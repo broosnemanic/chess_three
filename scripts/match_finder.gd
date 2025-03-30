@@ -28,8 +28,8 @@ func _init(a_composition: Composition):
 func setup_coord_sets():
 	all_coord_sets = []
 	var i_set: Array[Array]
-	for i_x: int in range(composition.size.x):
-		for i_y: int in range(composition.size.y):
+	for i_x: int in range(composition.size):
+		for i_y: int in range(composition.size):
 			var i_coord: Vector2i = Vector2i(i_x, i_y)
 			i_set = coord_sets_to_evaluate(i_coord)
 			for j_set: Array[Vector2i] in i_set:

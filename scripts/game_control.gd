@@ -10,7 +10,9 @@ extends Node
 @onready var counter: ScrollingCounter = %ScrollingCounter
 @onready var physics_piece_prefab = preload("res://scenes/physics_piece.tscn")
 
+@export var level_data: LevelData
 
+var piece_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var composition: Composition		# Abstract representation of a game
 var match_finder: MatchFinder
 var board_rotation: int = 0			# [0, 1, 2, or 3] 0 == up; then clockwise by 90 deg (PI/2 rad)
@@ -19,7 +21,7 @@ var score: int						# As it says
 var score_multi: int:
 		set(a_multi):
 			score_multi = a_multi
-			multi_display.text = get_multi_text(a_multi)
+			multi_display.display_multi(a_multi)
 func get_multi_text(a_multi: int) -> String:
 	return "[font_size=24]" + str(a_multi) + " X[/font_size]"
 	
@@ -28,6 +30,7 @@ const TEST_SIZE: int = 6			# Keep board square; dif ratios can be faked using bl
 
 
 func _ready():
+	piece_rng.seed = 1
 	size = TEST_SIZE
 	composition = test_composition()
 	match_finder = MatchFinder.new(composition)
@@ -196,7 +199,8 @@ func composition_test():
 
 
 func test_composition() -> Composition:
-	var t_comp: Composition = Composition._init_with_linear(Vector2i(size, size), random_linear_data(size * size))
+	#var t_comp: Composition = Composition._init_with_linear(size, random_linear_data(size * size))
+	var t_comp: Composition = Composition._init_from_level_data(level_data)
 	#place_stone(Vector2i(2, 2), t_comp)
 	#place_stone(Vector2i(3, 0), t_comp)
 	#place_stone(Vector2i(3, 5), t_comp)
@@ -235,9 +239,14 @@ func place_hole(a_coord: Vector2i, a_composition: Composition):
 func random_linear_data(a_count: int) -> Array[GamePiece]:
 	var t_data: Array[GamePiece] = []
 	for i_index: int in range(a_count):
-		var t_piece = GamePiece.init_random()
+		#var t_piece = GamePiece.init_random()
+		var t_piece = next_piece()
 		t_data.append(t_piece)
 	return t_data
+
+
+func next_piece() -> GamePiece:
+	return GamePiece.new(piece_rng.randi() % 5, piece_rng.randi() % 2)
 
 # Note board_camera is a child of a subviewport - we want to center it within the viewport
 #func reset_camera():
@@ -376,7 +385,7 @@ func do_fill():
 func fill_move_from_coord(a_coord: Vector2i) -> Move:
 	var t_down: Vector2i = composition.down
 	var t_piece: GamePiece = composition.piece_at(a_coord)
-	var t_start: Vector2i = a_coord + composition.size.x * t_down
+	var t_start: Vector2i = a_coord + composition.size * t_down
 	return Move.new(t_start, a_coord, Lists.MOVE_TYPE.FILL, t_piece, null)
 
 # As it says
@@ -408,7 +417,6 @@ func group_center_local_pos(a_set: Array[Vector2i]) -> Vector2:
 		t_xs += t_square.position.x
 		t_ys += t_square.position.y
 	var t_center: Vector2 = Vector2(t_xs, t_ys) / (a_set.size() as float)
-	print_debug(t_center)
 	return t_center
 
 

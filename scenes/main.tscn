@@ -1,10 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://bw0rhxbg2y5hf"]
+[gd_scene load_steps=9 format=3 uid="uid://bw0rhxbg2y5hf"]
 
 [ext_resource type="Script" uid="uid://c8fida5aajb62" path="res://scripts/main.gd" id="1_jfv3b"]
 [ext_resource type="Script" uid="uid://v6xxrbhcmp6j" path="res://scripts/game_control.gd" id="2_bgr0g"]
 [ext_resource type="Script" uid="uid://cm2q5n1dnor2b" path="res://scripts/board.gd" id="3_ulksu"]
 [ext_resource type="Script" uid="uid://cf26cgdrpdugi" path="res://scripts/scrolling_counter.gd" id="4_tbgi4"]
+[ext_resource type="Script" uid="uid://c18ky8te2qerf" path="res://scripts/multi_display.gd" id="4_tefeu"]
 [ext_resource type="Texture2D" uid="uid://brvq3aidddijr" path="res://textures/number_strip.png" id="5_tefeu"]
+[ext_resource type="Resource" uid="uid://dfsxp6rnj3lf5" path="res://levels/level_data_test.tres" id="6_o6xl0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jyhfs"]
 bg_color = Color(0.816223, 0.415576, 0.84836, 1)
@@ -35,23 +37,34 @@ layout_mode = 2
 script = ExtResource("4_tbgi4")
 digit_texture = ExtResource("5_tefeu")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+[node name="MultiContainer" type="VBoxContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Panel2" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="Panel2" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="MultiDisplay" type="RichTextLabel" parent="CanvasLayer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer"]
+layout_mode = 2
+
+[node name="MultiDisplay" type="RichTextLabel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer/PanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 bbcode_enabled = true
-text = "1 X"
+text = "[font_size=24]1X[/font_size]"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
+script = ExtResource("4_tefeu")
 
-[node name="Panel" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/VBoxContainer"]
+[node name="MultiEffectLabel" type="RichTextLabel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer/PanelContainer"]
+unique_name_in_owner = true
+clip_contents = false
+layout_mode = 2
+bbcode_enabled = true
+autowrap_mode = 0
+
+[node name="Panel" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -63,6 +76,7 @@ size_flags_horizontal = 3
 
 [node name="GameControl" type="Node" parent="."]
 script = ExtResource("2_bgr0g")
+level_data = ExtResource("6_o6xl0")
 
 [node name="ViewportPanelContainer" type="PanelContainer" parent="GameControl"]
 unique_name_in_owner = true

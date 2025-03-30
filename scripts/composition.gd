@@ -5,8 +5,10 @@ class_name Composition
 
 signal set_moved(a_set: Array[Move])	# A_set was just moved in _internal
 
+var piece_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var square_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var moves: Moves = Moves.new()			# Rules about piece movement
-var size: Vector2i						# Width x height - note: even oddly-shaped boards are actually rectangles with hidden squares.
+var size: int							# Width x height - note: even oddly-shaped boards are actually rectangles with hidden squares.
 var _internal: Array2DGamePiece			# 2D array representing current arrangement of pieces
 var _abst_board: Array2DAbstractSquare	# 2D array representing board (keeps track of special areas: e.g. holes)
 var selected_square: AbstractSquare		# Currently selected square, null if none
@@ -16,17 +18,47 @@ const default_down: Vector2i = Vector2i.DOWN
 
 
 # Setup to run on creation
-func _init(a_size: Vector2i):
+func _init(a_size: int):
 	size = a_size
-	_internal = Array2DGamePiece.new(size)
-	_abst_board = Array2DAbstractSquare.new(size)
+	_internal = Array2DGamePiece.new(Vector2i(size, size))
+	_abst_board = Array2DAbstractSquare.new(Vector2i(size, size))
 	fill_empty_board(_abst_board)
 	down = default_down
 
 
-static func _init_with_linear(a_size: Vector2i, a_linear_data: Array[GamePiece]) -> Composition:
+static func _init_from_level_data(a_data: LevelData):
+	var t_composition: Composition = Composition.new(a_data.size)
+	t_composition.piece_rng.seed = a_data.piece_seed
+	t_composition.fill_with_pieces(a_data.is_random_board)
+	for i_coord: Vector2i in a_data.stones:
+		t_composition._abst_board.at(i_coord).type = Lists.SQUARE_TYPE.STONE
+	for i_coord: Vector2i in a_data.holes:
+		t_composition._abst_board.at(i_coord).type = Lists.SQUARE_TYPE.HOLE
+	return t_composition
+	#TODO: finish imp this
+
+
+# Fill board with pieces
+func fill_with_pieces(a_is_random: bool):
+	for i: int in _internal._internal.size():
+		var t_piece: GamePiece
+		if a_is_random:
+			t_piece = GamePiece.init_random()
+		else:
+			t_piece = next_piece()
+		_internal._internal[i] = t_piece
+
+
+# Next piece using piece_seed
+func next_piece() -> GamePiece:
+	var t_type: int = piece_rng.randi() % 6
+	var t_color: int = piece_rng.randi() % 2
+	return GamePiece.new(t_type, t_color)
+
+
+static func _init_with_linear(a_size: int, a_linear_data: Array[GamePiece]) -> Composition:
 	var t_composition: Composition = Composition.new(a_size)
-	t_composition._internal.construct_from_linear(a_linear_data, a_size)
+	t_composition._internal.construct_from_linear(a_linear_data, Vector2i(a_size, a_size))
 	return t_composition
 
 
@@ -107,7 +139,7 @@ func _is_valid_direction(a_direction: Vector2i) -> bool:
 
 # Is a coord a valid index in _internal?
 func _is_in_range(a_coord: Vector2i) -> bool:
-	return a_coord.x < size.x and a_coord.y < size.y
+	return a_coord.x < size and a_coord.y < size
 
 
 # Convenience function
@@ -154,13 +186,13 @@ func slide_moveset() -> Array[Move]:
 	var t_holes: int = 0		# Count of holes so far
 	var t_distance: int = 0		# Holes plus spaces
 	if down == Vector2i.DOWN:
-		for i_x: int in range(size.x):
+		for i_x: int in range(size):
 			t_space = 0
 			t_holes = 0
 			t_hole_dict = {}
-			for i_y: int in range(size.y):
+			for i_y: int in range(size):
 				# We want to count from the bottom up
-				var t_y: int = size.y - i_y - 1
+				var t_y: int = size - i_y - 1
 				t_piece = _internal.at_coord(i_x, t_y)
 				t_square = square_at(Vector2i(i_x, t_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
@@ -194,11 +226,11 @@ func slide_moveset() -> Array[Move]:
 	# Up direction
 	if down == Vector2i.UP:
 		t_direction = -1
-		for i_x: int in range(size.x):
+		for i_x: int in range(size):
 			t_space = 0
 			t_holes = 0
 			t_hole_dict = {}
-			for i_y: int in range(size.y):
+			for i_y: int in range(size):
 				# Now top down
 				t_piece = _internal.at_coord(i_x, i_y)
 				t_square = square_at(Vector2i(i_x, i_y))
@@ -239,13 +271,13 @@ func slide_moveset() -> Array[Move]:
 	if down == Vector2i.RIGHT:
 		print("RIGHT")
 		t_direction = 1
-		for i_y: int in range(size.y):
+		for i_y: int in range(size):
 			t_space = 0
 			t_holes = 0
 			t_hole_dict = {}
-			for i_x: int in range(size.x):
+			for i_x: int in range(size):
 				# We want to count from left to right
-				var t_x: int = size.x - i_x - 1
+				var t_x: int = size - i_x - 1
 				t_piece = _internal.at_coord(t_x, i_y)
 				t_square = square_at(Vector2i(t_x, i_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE:
@@ -279,11 +311,11 @@ func slide_moveset() -> Array[Move]:
 	# Left direction
 	if down == Vector2i.LEFT:
 		t_direction = -1
-		for i_y: int in range(size.y):
+		for i_y: int in range(size):
 			t_space = 0
 			t_holes = 0
 			t_hole_dict = {}
-			for i_x: int in range(size.x):
+			for i_x: int in range(size):
 				# Now right to left
 				t_piece = _internal.at_coord(i_x, i_y)
 				t_square = square_at(Vector2i(i_x, i_y))
@@ -329,9 +361,9 @@ func fill_moveset() -> Array[Move]:
 	var t_square: AbstractSquare
 	var t_space: int = 0
 	if down == Vector2i.DOWN:
-		for i_x: int in range(size.x):
+		for i_x: int in range(size):
 			t_space = 0
-			for i_y: int in range(size.y):
+			for i_y: int in range(size):
 				t_piece = _internal.at_coord(i_x, i_y)
 				t_square = square_at(Vector2i(i_x, i_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE or t_piece != null:
@@ -340,7 +372,7 @@ func fill_moveset() -> Array[Move]:
 					break
 				else:
 					if t_square.is_hole(): continue
-					t_move = Move.new(Vector2i(i_x, i_y - t_direction * size.y),
+					t_move = Move.new(Vector2i(i_x, i_y - t_direction * size),
 									Vector2i(i_x, i_y),
 									Lists.MOVE_TYPE.FILL,
 									GamePiece.init_random(),
@@ -350,10 +382,10 @@ func fill_moveset() -> Array[Move]:
 	# Up direction
 	if down == Vector2i.UP:
 		t_direction = -1
-		for i_x: int in range(size.x):
+		for i_x: int in range(size):
 			t_space = 0
-			for i_y: int in range(size.y):
-				var t_y: int = size.y - i_y - 1
+			for i_y: int in range(size):
+				var t_y: int = size - i_y - 1
 				t_piece = _internal.at_coord(i_x, t_y)
 				t_square = square_at(Vector2i(i_x, t_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE or t_piece != null:
@@ -362,7 +394,7 @@ func fill_moveset() -> Array[Move]:
 					break
 				else:
 					if t_square.is_hole(): continue
-					t_move = Move.new(Vector2i(i_x, t_y - t_direction * size.y),
+					t_move = Move.new(Vector2i(i_x, t_y - t_direction * size),
 									Vector2i(i_x, t_y),
 									Lists.MOVE_TYPE.FILL,
 									GamePiece.init_random(),
@@ -372,9 +404,9 @@ func fill_moveset() -> Array[Move]:
 	# Right direction
 	if down == Vector2i.RIGHT:
 		t_direction = 1
-		for i_y: int in range(size.y):
+		for i_y: int in range(size):
 			t_space = 0
-			for i_x: int in range(size.x):
+			for i_x: int in range(size):
 				# We want to count from left to right
 				#var t_x: int = size.x - i_x - 1
 				t_piece = _internal.at_coord(i_x, i_y)
@@ -385,7 +417,7 @@ func fill_moveset() -> Array[Move]:
 					break
 				else:
 					if t_square.is_hole(): continue
-					t_move = Move.new(Vector2i(i_x - t_direction * size.x, i_y),
+					t_move = Move.new(Vector2i(i_x - t_direction * size, i_y),
 									Vector2i(i_x, i_y),
 									Lists.MOVE_TYPE.SLIDE,
 									GamePiece.init_random(),
@@ -395,11 +427,11 @@ func fill_moveset() -> Array[Move]:
 	# Left direction
 	if down == Vector2i.LEFT:
 		t_direction = -1
-		for i_y: int in range(size.y):
+		for i_y: int in range(size):
 			t_space = 0
-			for i_x: int in range(size.x):
+			for i_x: int in range(size):
 				# We want to count from right to left
-				var t_x: int = size.x - i_x - 1
+				var t_x: int = size - i_x - 1
 				t_piece = _internal.at_coord(t_x, i_y)
 				t_square = square_at(Vector2i(t_x, i_y))
 				if t_square.type == Lists.SQUARE_TYPE.STONE or t_piece != null:
@@ -408,7 +440,7 @@ func fill_moveset() -> Array[Move]:
 					break
 				else:
 					if t_square.is_hole(): continue
-					t_move = Move.new(Vector2i(t_x - t_direction * size.x, i_y),
+					t_move = Move.new(Vector2i(t_x - t_direction * size, i_y),
 									Vector2i(t_x, i_y),
 									Lists.MOVE_TYPE.SLIDE,
 									GamePiece.init_random(),
@@ -448,11 +480,11 @@ func _slide_origin() -> Vector2i:
 		Vector2i.DOWN:
 			return Vector2i(0, 0)
 		Vector2i.UP:
-			return Vector2i(0, size.y - 1)
+			return Vector2i(0, size - 1)
 		Vector2i.RIGHT:
 			return Vector2i(0, 0)
 		Vector2i.LEFT:
-			return Vector2i(size.x - 1, 0)
+			return Vector2i(size - 1, 0)
 		_:
 			return Vector2i(0, 0)
 
@@ -461,7 +493,7 @@ func random_move() -> Move:
 	var t_piece: GamePiece
 	var t_coord: Vector2i
 	for i_counter: int in range(100):
-		t_coord = Vector2i(randi_range(0, size.x - 1), randi_range(0, size.y - 1))
+		t_coord = Vector2i(randi_range(0, size - 1), randi_range(0, size - 1))
 		t_piece = _internal.at(t_coord)
 		if t_piece != null: break
 	if t_piece == null: return null
@@ -501,8 +533,8 @@ func valid_moveset(a_square: AbstractSquare) -> Array[Move]:
 
 
 func is_valid_coords(a_coords: Vector2i) -> bool:
-	if a_coords.x < 0 or a_coords.x >= size.x: return false
-	if a_coords.y < 0 or a_coords.y >= size.y: return false
+	if a_coords.x < 0 or a_coords.x >= size: return false
+	if a_coords.y < 0 or a_coords.y >= size: return false
 	return true
 
 
@@ -523,8 +555,8 @@ func remove_matched_sets(a_set_of_sets: Array[Array]):
 # Returns array of coords of squares with no piece
 func empty_coords() -> Array[Vector2i]:
 	var t_coords: Array[Vector2i]
-	for i_x: int in size.x:
-		for i_y: int in size.y:
+	for i_x: int in size:
+		for i_y: int in size:
 			var t_coord: Vector2i = Vector2i(i_x, i_y)
 			if piece_at(t_coord) == null:
 				t_coords.append(t_coord)
