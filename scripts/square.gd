@@ -6,6 +6,7 @@ signal square_clicked(a_square: Square)
 @onready var selected: Sprite2D = $Selected
 @onready var piece: Sprite2D = $Piece
 @onready var stone: Sprite2D = $Stone
+@onready var ice: Sprite2D = $Ice
 @onready var hole: Sprite2D = $Hole
 @onready var highlight: Sprite2D = $Highlight
 @onready var background: Sprite2D = $Background
@@ -20,6 +21,7 @@ const PIECE_SCALE: Vector2 = Vector2(0.85, 0.85)
 
 
 func _ready() -> void:
+	ice.modulate = Color(1.0, 1.0, 1.0, 0.75)
 	piece.scale = PIECE_SCALE
 
 
@@ -28,6 +30,7 @@ func initialize(a_absract_square: AbstractSquare) -> void:
 	background.texture = Textures.square_texture(a_absract_square.type, a_absract_square.coords)
 	stone.visible = a_absract_square.is_stone()
 	hole.visible = a_absract_square.is_hole()
+	ice.visible = a_absract_square.is_ice()
 	piece.visible = not (a_absract_square.is_stone() or a_absract_square.is_hole())
 
 

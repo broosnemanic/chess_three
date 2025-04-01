@@ -9,7 +9,7 @@
 [ext_resource type="Resource" uid="uid://dfsxp6rnj3lf5" path="res://levels/level_data_test.tres" id="6_o6xl0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jyhfs"]
-bg_color = Color(0.816223, 0.415576, 0.84836, 1)
+bg_color = Color(0.815686, 0.415686, 0.847059, 0)
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_jfv3b")

@@ -41,6 +41,8 @@ func _ready():
 	board.move_animation_finished.connect(on_move_animation_finished)
 	position_board()
 	reset_camera()
+	counter.is_rate_by_chunk = true
+	counter.chunk_rate = 1.0
 	slide(composition, composition.down)
 
 
@@ -67,10 +69,8 @@ func _input(event):
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
 			rotate_board(true)
-			print_debug(composition.down)
 		if event.keycode == KEY_L:
 			rotate_board(false)
-			print_debug(composition.down)
 
 
 # Increments roation by 1/4 turn
@@ -128,16 +128,12 @@ func board_rotation_to_vector(a_rot: int) -> Vector2:
 	# The above code translates any a_rot to be in the interval [0, 3]
 	match t_rot:
 		0:
-			print_debug(Vector2.RIGHT)
 			return Vector2i.DOWN
 		1:
-			print_debug(Vector2.UP)
 			return Vector2i.DOWN
 		2:
-			print_debug(Vector2.LEFT)
 			return Vector2i.DOWN
 		3:
-			print_debug(Vector2.DOWN)
 			return Vector2i.DOWN
 		_:
 			return Vector2i.DOWN

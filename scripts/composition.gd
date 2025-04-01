@@ -269,7 +269,6 @@ func slide_moveset() -> Array[Move]:
 							t_hole_dict[i_key] = maxi(0, t_hole_dict[i_key] - 1)
 	# Right direction
 	if down == Vector2i.RIGHT:
-		print("RIGHT")
 		t_direction = 1
 		for i_y: int in range(size):
 			t_space = 0
