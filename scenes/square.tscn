@@ -43,8 +43,8 @@ visible = false
 texture = ExtResource("3_8j3tx")
 
 [node name="PieceBody" type="RigidBody2D" parent="."]
+can_sleep = false
 lock_rotation = true
-freeze = true
 
 [node name="Piece" type="Sprite2D" parent="PieceBody"]
 

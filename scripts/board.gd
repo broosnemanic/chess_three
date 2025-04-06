@@ -181,18 +181,30 @@ func animate_matches(a_set_of_sets: Array[Array]):
 
 # A_coords are end squares for new pieces to land
 # A_down is the direction pieces will fall
+#func animate_fill(a_moves: Array[Move], a_down: Vector2i):
+	#var t_board_width: float = size.x * Constants.SQUARE_WIDTH		# We drop piece from one board width
+	#for i_move: Move in a_moves:
+		#var t_square: Square = squares.at(i_move.end)
+		#t_square.display_piece(i_move.piece)
+		#var t_piece: Sprite2D = t_square.piece
+		#t_piece.position = -1.0 * a_down * t_board_width
+		#var tween = get_tree().create_tween()
+		#tween.tween_property(t_piece, 'position', Vector2.ZERO, i_move.animation_duration())
+		#tween.finished.connect(down_bounce.bind(t_piece))
+		
 func animate_fill(a_moves: Array[Move], a_down: Vector2i):
 	var t_board_width: float = size.x * Constants.SQUARE_WIDTH		# We drop piece from one board width
 	for i_move: Move in a_moves:
 		var t_square: Square = squares.at(i_move.end)
 		t_square.display_piece(i_move.piece)
-		var t_piece: Sprite2D = t_square.piece
+		var t_piece: RigidBody2D = t_square.piece_body
+		#t_piece.freeze = true
 		t_piece.position = -1.0 * a_down * t_board_width
-		var tween = get_tree().create_tween()#.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN_OUT)
-		#var down_tween = get_tree().create_tween()
-		#var up_tween = get_tree().create_tween()
-		tween.tween_property(t_piece, 'position', Vector2.ZERO, i_move.animation_duration())
-		tween.finished.connect(down_bounce.bind(t_piece))
+		#t_piece.freeze = false
+		pass
+		#var tween = get_tree().create_tween()
+		#tween.tween_property(t_piece, 'position', Vector2.ZERO, i_move.animation_duration())
+		#tween.finished.connect(down_bounce.bind(t_piece))
 
 
 
