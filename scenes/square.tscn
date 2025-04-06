@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://ba2plb8u1g0c7"]
+[gd_scene load_steps=9 format=3 uid="uid://ba2plb8u1g0c7"]
 
 [ext_resource type="Script" uid="uid://kuuch8yk0sm" path="res://scripts/square.gd" id="1_gv2rf"]
 [ext_resource type="Texture2D" uid="uid://lvf55r5sffo7" path="res://textures/board/highlight_01.png" id="2_rd51l"]
@@ -8,6 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://ck1175dd62hoh" path="res://textures/pieces/ice_cube.png" id="5_ne3tu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_oflee"]
+size = Vector2(128, 128)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ne3tu"]
 size = Vector2(128, 128)
 
 [node name="Square" type="Area2D"]
@@ -27,8 +30,6 @@ texture = ExtResource("5_1a5g5")
 visible = false
 texture = ExtResource("2_rd51l")
 
-[node name="Piece" type="Sprite2D" parent="."]
-
 [node name="Stone" type="Sprite2D" parent="."]
 visible = false
 texture = ExtResource("3_gjakn")
@@ -40,3 +41,12 @@ texture = ExtResource("5_ne3tu")
 [node name="Selected" type="Sprite2D" parent="."]
 visible = false
 texture = ExtResource("3_8j3tx")
+
+[node name="PieceBody" type="RigidBody2D" parent="."]
+lock_rotation = true
+freeze = true
+
+[node name="Piece" type="Sprite2D" parent="PieceBody"]
+
+[node name="RigidBodyShape" type="CollisionShape2D" parent="PieceBody"]
+shape = SubResource("RectangleShape2D_ne3tu")

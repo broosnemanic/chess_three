@@ -4,12 +4,13 @@ class_name Square
 signal square_clicked(a_square: Square)
 
 @onready var selected: Sprite2D = $Selected
-@onready var piece: Sprite2D = $Piece
+@onready var piece: Sprite2D = $PieceBody/Piece
 @onready var stone: Sprite2D = $Stone
 @onready var ice: Sprite2D = $Ice
 @onready var hole: Sprite2D = $Hole
 @onready var highlight: Sprite2D = $Highlight
 @onready var background: Sprite2D = $Background
+@onready var piece_body: RigidBody2D = $PieceBody
 
 var absract_square: AbstractSquare
 var is_locked: bool
@@ -41,6 +42,15 @@ func _input_event(_viewport, event, _shape_idx):
 				square_clicked.emit(self)
 
 
+# Allows manipulation of physics attributes without messing stuff up; we are keeping y-component of velocity = 0
+func _integrate_forces(state):
+	var vel = state.get_linear_velocity ()
+	#if !is_taken:
+		#state.set_linear_velocity (Vector2 (0, vel.y))
+		#TODO: Locking direction depends on board rotation
+
+
+
 #func display_piece(a_type: Lists.PIECE_TYPE, a_color: Lists.COLOR):
 	#piece.texture = Textures.piece_texture(a_type, a_color)
 
@@ -57,6 +67,10 @@ func hide_piece():
 
 func set_locked(a_is_locked: bool):
 	is_locked = a_is_locked
+
+
+func set_is_piece_physics(a_is_on: bool):
+	piece_body.freeze = not a_is_on
 
 
 # Mark this square as a valid destination for piece on selected square

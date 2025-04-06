@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bw0rhxbg2y5hf"]
+[gd_scene load_steps=13 format=3 uid="uid://bw0rhxbg2y5hf"]
 
 [ext_resource type="Script" uid="uid://c8fida5aajb62" path="res://scripts/main.gd" id="1_jfv3b"]
 [ext_resource type="Script" uid="uid://v6xxrbhcmp6j" path="res://scripts/game_control.gd" id="2_bgr0g"]
@@ -10,6 +10,14 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jyhfs"]
 bg_color = Color(0.815686, 0.415686, 0.847059, 0)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o6xl0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tipki"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_85g3d"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_choun"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_jfv3b")
@@ -105,3 +113,26 @@ ignore_rotation = false
 [node name="Board" type="Node2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
 unique_name_in_owner = true
 script = ExtResource("3_ulksu")
+
+[node name="Top" type="StaticBody2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board/Top"]
+shape = SubResource("RectangleShape2D_o6xl0")
+
+[node name="Right" type="StaticBody2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board"]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board/Right"]
+shape = SubResource("RectangleShape2D_tipki")
+
+[node name="Left" type="StaticBody2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board"]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board/Left"]
+shape = SubResource("RectangleShape2D_85g3d")
+
+[node name="Bottom" type="StaticBody2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board"]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport/Board/Bottom"]
+shape = SubResource("RectangleShape2D_choun")

@@ -7,6 +7,10 @@ signal move_animation_finished(a_move: Move)
 
 
 @onready var square_prefab: Resource = preload("res://scenes/square.tscn")
+@onready var top_border: StaticBody2D = $Top			# StaticBody2Ds to support pieces when physics is on
+@onready var right_border: StaticBody2D = $Right
+@onready var left_border: StaticBody2D = $Left
+@onready var bottom_border: StaticBody2D = $Bottom
 
 
 var size: Vector2i						# [column count, row count]
@@ -29,6 +33,32 @@ func setup(a_abst_board: Array2DAbstractSquare):
 			var t_coord: Vector2i = Vector2i(i_x, i_y)
 			var t_abst_square: AbstractSquare = a_abst_board.at(t_coord)
 			place_square(t_abst_square)
+	setup_collision_borders()
+
+
+# Resize and position physics boarders around board
+func setup_collision_borders():
+	#var t_long: float = (size.x + 2) * Constants.SQUARE_WIDTH
+	var t_long: float = (size.x + 2) * Constants.SQUARE_WIDTH
+	var t_short: float = Constants.SQUARE_WIDTH
+	set_border_size(top_border, Vector2(t_long, t_short))
+	set_border_size(bottom_border, Vector2(t_long, t_short))
+	set_border_size(right_border, Vector2(t_short, t_long))
+	set_border_size(left_border, Vector2(t_short, t_long))
+	#top_border.position = Vector2(size.x * Constants.SQUARE_WIDTH / 2.0, -t_short)
+	top_border.position = Vector2((size.x - 1) * Constants.SQUARE_WIDTH / 2.0, -t_short)
+	bottom_border.position = Vector2((size.x - 1) * Constants.SQUARE_WIDTH / 2.0, size.x * Constants.SQUARE_WIDTH)
+	right_border.position = Vector2(size.x * Constants.SQUARE_WIDTH, (size.x - 1) * Constants.SQUARE_WIDTH / 2.0)
+	left_border.position = Vector2(-t_short, (size.x - 1) * Constants.SQUARE_WIDTH / 2.0)
+
+
+func set_border_size(a_border: StaticBody2D, a_size: Vector2):
+	var t_collider: CollisionShape2D = a_border.get_node("CollisionShape2D")
+	var t_shape: RectangleShape2D = t_collider.shape
+	t_shape.set_size(a_size)
+	#a_border.get_node("CollisionShape2D").shape.size = a_size
+	pass
+	
 
 
 func display_piece_set(a_piece_set: Array2DGamePiece):
