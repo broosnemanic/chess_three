@@ -14,6 +14,8 @@ var squares: Array2DSquare				# Squares by coordinate (keeps track of special sq
 var pieces: Array2DGamePiece			# Pieces by cordinate
 # Array[Array[Move]]
 var animation_queue: Array[Array]		# List of sets of animations to be played sequentially
+var move_count_array: Array2DInt		# item is count of pieces above which have moved this turn
+										# for calulating bounce depth
 
 
 #func _ready() -> void:
@@ -118,6 +120,8 @@ func on_animated_move_finished(a_move: Move):
 	t_start.piece.texture = null
 	# Restore display of moved piece to end square
 	t_end.display_piece(a_move.piece)
+	# TODO: Get the args
+	#t_end.bounce(somemagnitude, down)
 
 
 # Distance in units of square width
@@ -149,9 +153,9 @@ func animate_matches(a_set_of_sets: Array[Array]):
 		animate_match(i_set)
 
 
-# A_coords are end squares for new pieces to land
 # A_down is the direction pieces will fall
 func animate_fill(a_moves: Array[Move], a_down: Vector2i):
+	refresh_move_count_array(a_moves, a_down)
 	var t_board_width: float = size.x * Constants.SQUARE_WIDTH		# We drop piece from one board width
 	for i_move: Move in a_moves:
 		var t_square: Square = squares.at(i_move.end)
@@ -159,29 +163,80 @@ func animate_fill(a_moves: Array[Move], a_down: Vector2i):
 		var t_piece: Sprite2D = t_square.piece
 		t_piece.position = -1.0 * a_down * t_board_width
 		var tween = get_tree().create_tween()#.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN_OUT)
-		#var down_tween = get_tree().create_tween()
-		#var up_tween = get_tree().create_tween()
+		var t_distance: float = abs((i_move.end * a_down).length()) + 1.0
 		tween.tween_property(t_piece, 'position', Vector2.ZERO, i_move.animation_duration())
-		tween.finished.connect(down_bounce.bind(t_piece))
+		#tween.finished.connect(down_bounce.bind(t_piece, a_down, t_distance))
+		tween.finished.connect(t_square.bounce.bind(t_distance, a_down))
+
+
+func animate_slide(a_moves: Array[Move], a_down: Vector2i):
+	refresh_move_count_array(a_moves, a_down)
+	for i_move: Move in a_moves:
+		animate_move(i_move)
 
 
 
-func down_bounce(a_piece: Sprite2D):
-	var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
-	var rot_tween = get_tree().create_tween()
-	var t_rot_saved: float = a_piece.rotation
-	var t_rot: float = randf_range(-0.05, 0.05)
-	down_tween.tween_property(a_piece, 'position', Vector2(0, 2.0), Constants.DOWN_BOUNCE_DURATION)
-	down_tween.finished.connect(up_bounce.bind(a_piece, t_rot_saved))
-	rot_tween.tween_property(a_piece, 'rotation', t_rot + t_rot_saved, Constants.DOWN_BOUNCE_DURATION)
-	
-	
-	
-func up_bounce(a_piece: Sprite2D, a_saved_rot: float):
-	var up_tween = get_tree().create_tween()#.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
-	up_tween.tween_property(a_piece, 'position', Vector2.ZERO, Constants.UP_BOUNCE_DURATION)
-	var rot_tween = get_tree().create_tween()
-	rot_tween.tween_property(a_piece, 'rotation', a_saved_rot, Constants.UP_BOUNCE_DURATION)
+# Used to calculate bounce depth for moved pieces
+func refresh_move_count_array(a_moves: Array[Move], a_down: Vector2i):
+	move_count_array = Array2DInt.new(size)
+	var t_is_moved_array: Array2DBool = Array2DBool.new(size)
+	for i_move: Move in a_moves:
+		t_is_moved_array.put(true, i_move.end)
+
+
+	for i: int in size.x:
+		#var t_start: int = 1 if is_negative_direction(a_down) else (size.x - 2)
+		#var t_end: int = size.x - 1 if is_negative_direction(a_down) else 0
+		var t_direction: int = -1 if is_negative_direction(a_down) else 1
+		var t_current: Vector2i
+		var t_lower: Vector2i
+		var t_count: int = 0
+		for j: int in size.x:
+			# If a_down is apositive direction (eg DOWN) we count backwards
+			var t_j: int = j if is_negative_direction(a_down) else (size.x - 1) - j
+			if is_horizontal_direction(a_down):
+				t_current = Vector2i(t_j, i)
+				t_lower = Vector2i(t_j + t_direction, i)
+			else:
+				t_current = Vector2i(i, t_j)
+				t_lower = Vector2i(i, t_j + t_direction)
+			if t_is_moved_array.is_valid_coord(t_lower) and t_is_moved_array.at(t_lower):
+				t_count += 1
+			else:
+				t_count = 0
+			move_count_array.put(t_count, t_current)
+	print_debug(move_count_array.out())
+
+
+
+func is_horizontal_direction(a_direction: Vector2i) -> bool:
+	if a_direction.y == 0: return true
+	return false
+
+
+# AKA Vector2i.UP and Vector2i.LEFT
+func is_negative_direction(a_direction: Vector2i) -> bool:
+	if a_direction.x < 0 or a_direction.y < 0: return true
+	return false
+
+
+#func down_bounce(a_piece: Sprite2D, a_down: Vector2i, a_distance: float):
+	#var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	#var rot_tween = get_tree().create_tween()
+	#var t_rot_saved: float = a_piece.rotation
+	#var t_rot: float = randf_range(-0.05, 0.05)
+	##down_tween.tween_property(a_piece, 'position', Vector2(0, 2.0), Constants.DOWN_BOUNCE_DURATION)
+	#down_tween.tween_property(a_piece, 'position', 10.0 * a_distance * a_down, Constants.DOWN_BOUNCE_DURATION)
+	#down_tween.finished.connect(up_bounce.bind(a_piece, t_rot_saved))
+	#rot_tween.tween_property(a_piece, 'rotation', t_rot + t_rot_saved, Constants.DOWN_BOUNCE_DURATION)
+	#
+	#
+	#
+#func up_bounce(a_piece: Sprite2D, a_saved_rot: float):
+	#var up_tween = get_tree().create_tween()#.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	#up_tween.tween_property(a_piece, 'position', Vector2.ZERO, Constants.UP_BOUNCE_DURATION)
+	#var rot_tween = get_tree().create_tween()
+	#rot_tween.tween_property(a_piece, 'rotation', a_saved_rot, Constants.UP_BOUNCE_DURATION)
 
 
 # Rotate piece sprites to counter board rotation (so the still look upright)

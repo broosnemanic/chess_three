@@ -84,3 +84,33 @@ func do_match_animation():
 func rotate_piece(a_rotation: float):
 	var rot_tween = get_tree().create_tween()
 	rot_tween.tween_property(piece, 'rotation', a_rotation, 1.0)
+
+
+
+func bounce(a_magnitude: float, a_down: Vector2i):
+	var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	var rot_tween = get_tree().create_tween()
+	var t_rot_saved: float = piece.rotation
+	var t_rot: float = randf_range(-0.05, 0.05)
+	down_tween.tween_property(piece, 'position', 10.0 * a_magnitude * a_down, Constants.DOWN_BOUNCE_DURATION)
+	down_tween.finished.connect(up_bounce.bind(t_rot_saved))
+	rot_tween.tween_property(piece, 'rotation', t_rot + t_rot_saved, Constants.DOWN_BOUNCE_DURATION)
+
+
+#func down_bounce(a_piece: Sprite2D, a_down: Vector2i, a_distance: float):
+	#var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	#var rot_tween = get_tree().create_tween()
+	#var t_rot_saved: float = a_piece.rotation
+	#var t_rot: float = randf_range(-0.05, 0.05)
+	##down_tween.tween_property(a_piece, 'position', Vector2(0, 2.0), Constants.DOWN_BOUNCE_DURATION)
+	#down_tween.tween_property(a_piece, 'position', 10.0 * a_distance * a_down, Constants.DOWN_BOUNCE_DURATION)
+	#down_tween.finished.connect(up_bounce.bind(a_piece, t_rot_saved))
+	#rot_tween.tween_property(a_piece, 'rotation', t_rot + t_rot_saved, Constants.DOWN_BOUNCE_DURATION)
+	
+	
+	
+func up_bounce(a_saved_rot: float):
+	var up_tween = get_tree().create_tween()#.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	up_tween.tween_property(piece, 'position', Vector2.ZERO, Constants.UP_BOUNCE_DURATION)
+	var rot_tween = get_tree().create_tween()
+	rot_tween.tween_property(piece, 'rotation', a_saved_rot, Constants.UP_BOUNCE_DURATION)

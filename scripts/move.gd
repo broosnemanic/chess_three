@@ -25,6 +25,10 @@ func is_degenerate() -> bool:
 	return start == null or end == null or start == end or piece == null
 
 
+func distance() -> float:
+	return start.distance_to(end)
+
+
 func set_bool_from_type(a_type: Lists.MOVE_TYPE):
 	is_take = a_type == Lists.MOVE_TYPE.TAKE
 	is_match = a_type == Lists.MOVE_TYPE.MATCH

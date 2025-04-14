@@ -26,7 +26,7 @@ func get_multi_text(a_multi: int) -> String:
 	return "[font_size=24]" + str(a_multi) + " X[/font_size]"
 	
 	
-const TEST_SIZE: int = 6			# Keep board square; dif ratios can be faked using blocked off squares
+const TEST_SIZE: int = 10			# Keep board square; dif ratios can be faked using blocked off squares
 
 
 func _ready():
@@ -355,9 +355,7 @@ func do_slide():
 		do_fill()
 		await get_tree().create_timer(Constants.SLIDE_DURATION).timeout
 	else:
-		# TODO: This should be board.animate_slide
-		for i_move: Move in t_moveset:
-			board.animate_move(i_move)
+		board.animate_slide(t_moveset, composition.down)
 		await get_tree().create_timer(Constants.SLIDE_DURATION).timeout
 		do_fill()
 		await get_tree().create_timer(Constants.SLIDE_DURATION).timeout

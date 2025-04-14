@@ -6,7 +6,7 @@
 script = ExtResource("1_c14oh")
 piece_seed = 0
 board_seed = 0
-size = 7
+size = 6
 stones = Array[Vector2i]([])
 holes = Array[Vector2i]([])
 is_random_board = false

@@ -7,5 +7,5 @@ const MOVE_DURATION: float = 0.3
 const SLIDE_DURATION: float = 0.3
 const MATCH_DURATION: float = 0.5
 const FILL_DURATION: float = 0.3
-const DOWN_BOUNCE_DURATION: float = 0.1
-const UP_BOUNCE_DURATION: float = 0.1
+const DOWN_BOUNCE_DURATION: float = 0.2
+const UP_BOUNCE_DURATION: float = 0.2
