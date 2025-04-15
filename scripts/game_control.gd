@@ -326,7 +326,7 @@ func on_square_clicked(a_square: Square):
 func do_move(a_move: Move):
 	score_multi = maxi(1, score_multi - 1)		# Player move reduces multiplier
 	composition.do_move(a_move)		# Happens in one frame
-	board.animate_move(a_move)		# Takes MOVE_DURATION seconds
+	board.animate_move(a_move, composition.down)		# Takes MOVE_DURATION seconds
 	await get_tree().create_timer(Constants.MOVE_DURATION).timeout
 	do_matches()
 

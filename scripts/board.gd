@@ -25,6 +25,7 @@ var move_count_array: Array2DInt		# item is count of pieces above which have mov
 
 func setup(a_abst_board: Array2DAbstractSquare):
 	size = a_abst_board.size
+	move_count_array = Array2DInt.new(size)
 	squares = Array2DSquare.new(size)
 	for i_x: int in range(a_abst_board.size.x):
 		for i_y: int in range(a_abst_board.size.y):
@@ -96,7 +97,7 @@ func is_piece_present(a_square: Square) -> bool:
 	return pieces.at(a_square.coords()) != null
 
 
-func animate_move(a_move: Move):
+func animate_move(a_move: Move, a_down: Vector2i):
 	var t_start: Square = squares.at(a_move.start)
 	var t_end: Square = squares.at(a_move.end)
 		# Move sprite from start to end squares
@@ -105,12 +106,12 @@ func animate_move(a_move: Move):
 	var t_delta: Vector2 = Vector2(t_end.position - t_start.position)
 	#var t_duration: float = a_move.animation_duration() *  distance(t_start.coords(), t_end.coords())
 	tween.tween_property(t_start.piece, 'position', t_delta, a_move.animation_duration())
-	tween.finished.connect(on_animated_move_finished.bind(a_move))
+	tween.finished.connect(on_animated_move_finished.bind(a_move, a_down))
 
 
 # We have moved the actual Sprite2D from the start to the end square - 
 # We have to move that back, and display the correct pieces 
-func on_animated_move_finished(a_move: Move):
+func on_animated_move_finished(a_move: Move, a_down: Vector2i):
 	move_animation_finished.emit(a_move)
 	var t_start: Square = squares.at(a_move.start)
 	var t_end: Square = squares.at(a_move.end)
@@ -121,7 +122,7 @@ func on_animated_move_finished(a_move: Move):
 	# Restore display of moved piece to end square
 	t_end.display_piece(a_move.piece)
 	# TODO: Get the args
-	#t_end.bounce(somemagnitude, down)
+	t_end.bounce(move_count_array.at(t_end.coords()), a_down)
 
 
 # Distance in units of square width
@@ -131,13 +132,13 @@ func distance(a_start: Vector2i, a_end: Vector2i) -> float:
 	var t_value: int = pow(t_x, 2) + pow(t_y, 2)
 	return sqrt(t_value as float)
 
-func animate_next_moveset():
+func animate_next_moveset(a_down: Vector2i):
 	if animation_queue.is_empty():
 		return
 	var t_moveset: Array[Move] = animation_queue[0]
 	if not t_moveset.is_empty():
 		for i_move: Move in t_moveset:
-			animate_move(i_move)
+			animate_move(i_move, a_down)
 
 
 # Animate removal of matched set
@@ -163,7 +164,8 @@ func animate_fill(a_moves: Array[Move], a_down: Vector2i):
 		var t_piece: Sprite2D = t_square.piece
 		t_piece.position = -1.0 * a_down * t_board_width
 		var tween = get_tree().create_tween()#.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN_OUT)
-		var t_distance: float = abs((i_move.end * a_down).length()) + 1.0
+		#var t_distance: float = abs((i_move.end * a_down).length()) + 1.0
+		var t_distance: float = move_count_array.at(t_square.coords()) + 1.0
 		tween.tween_property(t_piece, 'position', Vector2.ZERO, i_move.animation_duration())
 		#tween.finished.connect(down_bounce.bind(t_piece, a_down, t_distance))
 		tween.finished.connect(t_square.bounce.bind(t_distance, a_down))
@@ -172,7 +174,7 @@ func animate_fill(a_moves: Array[Move], a_down: Vector2i):
 func animate_slide(a_moves: Array[Move], a_down: Vector2i):
 	refresh_move_count_array(a_moves, a_down)
 	for i_move: Move in a_moves:
-		animate_move(i_move)
+		animate_move(i_move, a_down)
 
 
 
@@ -205,7 +207,6 @@ func refresh_move_count_array(a_moves: Array[Move], a_down: Vector2i):
 			else:
 				t_count = 0
 			move_count_array.put(t_count, t_current)
-	print_debug(move_count_array.out())
 
 
 

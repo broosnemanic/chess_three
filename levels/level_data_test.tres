@@ -6,8 +6,8 @@
 script = ExtResource("1_c14oh")
 piece_seed = 0
 board_seed = 0
-size = 6
-stones = Array[Vector2i]([])
-holes = Array[Vector2i]([])
+size = 9
+stones = Array[Vector2i]([Vector2i(3, 3)])
+holes = Array[Vector2i]([Vector2i(4, 5)])
 is_random_board = false
 metadata/_custom_type_script = "uid://belp6enjrjms"
