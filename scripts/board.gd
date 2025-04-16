@@ -146,6 +146,7 @@ func animate_match(a_matched_set: Array[Vector2i]):
 	for i_coord: Vector2i in a_matched_set:
 		var t_square: Square = squares.at(i_coord)
 		t_square.do_match_animation()
+		t_square.show_brief_emphasis()
 
 
 # Do match animation for all squares in a_set_of_sets

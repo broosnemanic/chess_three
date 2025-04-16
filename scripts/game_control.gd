@@ -10,7 +10,7 @@ extends Node
 @onready var counter: ScrollingCounter = %ScrollingCounter
 @onready var physics_piece_prefab = preload("res://scenes/physics_piece.tscn")
 
-@export var level_data: LevelData
+@export var level_data: LevelData = preload("res://levels/level_data_01.tres")
 
 var piece_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var composition: Composition		# Abstract representation of a game
@@ -32,7 +32,8 @@ const TEST_SIZE: int = 10			# Keep board square; dif ratios can be faked using b
 func _ready():
 	piece_rng.seed = 1
 	size = TEST_SIZE
-	composition = test_composition()
+	#composition = test_composition()
+	composition = Composition._init_from_level_data(level_data)
 	match_finder = MatchFinder.new(composition)
 	position_viewport()
 	board.setup(composition._abst_board)

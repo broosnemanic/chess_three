@@ -11,6 +11,7 @@ func valid_moveset(a_composition: Composition, a_square: AbstractSquare) -> Arra
 	var t_take_piece: GamePiece
 	for i_square: AbstractSquare in a_composition.squares_linear():
 		if is_valid_move(a_composition, a_square.coords, i_square.coords):
+			if is_blocked_move(a_composition, a_square.coords, i_square.coords): continue
 			t_take_piece = a_composition.piece_at(i_square.coords)
 			t_move = Move.new(a_square.coords,
 								i_square.coords,
@@ -19,6 +20,20 @@ func valid_moveset(a_composition: Composition, a_square: AbstractSquare) -> Arra
 								t_take_piece)
 			t_moves.append(t_move)
 	return t_moves
+
+
+# Assumption: Move is in some cardinal / half cardinal direction
+func is_blocked_move(a_composition: Composition, a_start: Vector2i, a_end: Vector2i) -> bool:
+	var t_delta_x: int = sign(a_end.x - a_start.x)
+	var t_delta_y: int = sign(a_end.y - a_start.y)
+	var t_delta: Vector2i = Vector2i(t_delta_x, t_delta_y)
+	var t_coord: Vector2i = Vector2i(a_start)
+	for i: int in a_composition.size:
+		t_coord += t_delta
+		if not a_composition.is_valid_coords(t_coord): break
+		if a_composition.square_at(t_coord).is_stone(): return true
+	return false
+
 
 
 # Could a_peg_1 move to location of a_peg_2?

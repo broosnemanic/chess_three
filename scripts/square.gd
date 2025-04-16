@@ -110,7 +110,13 @@ func bounce(a_magnitude: float, a_down: Vector2i):
 	
 	
 func up_bounce(a_saved_rot: float):
-	var up_tween = get_tree().create_tween()#.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	var up_tween = get_tree().create_tween()#.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN)
 	up_tween.tween_property(piece, 'position', Vector2.ZERO, Constants.UP_BOUNCE_DURATION)
 	var rot_tween = get_tree().create_tween()
 	rot_tween.tween_property(piece, 'rotation', a_saved_rot, Constants.UP_BOUNCE_DURATION)
+
+
+func show_brief_emphasis():
+	var tween = get_tree().create_tween()
+	tween.tween_property(background, "modulate", Color.REBECCA_PURPLE, 0.5)
+	tween.tween_property(background, "modulate", Color(1, 1, 1, 1), 0.5)
