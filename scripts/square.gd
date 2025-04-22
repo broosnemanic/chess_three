@@ -89,6 +89,7 @@ func rotate_piece(a_rotation: float):
 
 func bounce(a_magnitude: float, a_down: Vector2i):
 	var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	#var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	var rot_tween = get_tree().create_tween()
 	var t_rot_saved: float = piece.rotation
 	var t_rot: float = randf_range(-0.05, 0.05)

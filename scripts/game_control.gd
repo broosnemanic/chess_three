@@ -10,7 +10,7 @@ extends Node
 @onready var counter: ScrollingCounter = %ScrollingCounter
 @onready var physics_piece_prefab = preload("res://scenes/physics_piece.tscn")
 
-@export var level_data: LevelData = preload("res://levels/level_data_01.tres")
+@onready var level_data: LevelData = preload("res://levels/level_data_01.tres")
 
 var piece_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var composition: Composition		# Abstract representation of a game
@@ -28,11 +28,16 @@ func get_multi_text(a_multi: int) -> String:
 	
 const TEST_SIZE: int = 10			# Keep board square; dif ratios can be faked using blocked off squares
 
+var score_data: Dictionary = {0:0, 1:0, 2:0}
+var default_score_data: Dictionary = {0:0}
+var save_path = "user://score_date.save"
+var turn_index: int					# What turn are we on for the current level?
+
+
 
 func _ready():
 	piece_rng.seed = 1
 	size = TEST_SIZE
-	#composition = test_composition()
 	composition = Composition._init_from_level_data(level_data)
 	match_finder = MatchFinder.new(composition)
 	position_viewport()
@@ -45,6 +50,26 @@ func _ready():
 	counter.is_rate_by_chunk = true
 	counter.chunk_rate = 1.0
 	slide(composition, composition.down)
+	load_score_data()
+
+
+func load_level(a_level_data: LevelData):
+	pass
+
+func save_score_data():
+	var save = FileAccess.open(save_path, FileAccess.WRITE)
+	save.store_var(score_data)
+	save.flush()
+	print_debug("Saved: " + str(score_data))
+
+
+func load_score_data():
+	if FileAccess.file_exists(save_path):
+		var t_save = FileAccess.open(save_path, FileAccess.READ)
+		var t_data = t_save.get_var()
+		score_data = default_score_data.duplicate() if t_data == null else t_data
+		score = score_data[0]
+		counter.display_points(score_data[0])
 
 
 func position_viewport():
@@ -393,7 +418,10 @@ func update_score_from_matches(a_matches: Array[Array]):
 		counter.display_points(t_points)
 		display_floating_points(i_set, t_points)
 		t_count += i_set.size() - 1
-	score_multi += t_count	
+	score_multi += t_count
+	score_data[0] = max(score_data[0], score)
+	save_score_data()
+
 
 
 func display_floating_points(a_set: Array[Vector2i], a_points: int):

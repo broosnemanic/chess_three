@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bw0rhxbg2y5hf"]
+[gd_scene load_steps=8 format=3 uid="uid://bw0rhxbg2y5hf"]
 
 [ext_resource type="Script" uid="uid://c8fida5aajb62" path="res://scripts/main.gd" id="1_jfv3b"]
 [ext_resource type="Script" uid="uid://v6xxrbhcmp6j" path="res://scripts/game_control.gd" id="2_bgr0g"]
@@ -6,7 +6,6 @@
 [ext_resource type="Script" uid="uid://cf26cgdrpdugi" path="res://scripts/scrolling_counter.gd" id="4_tbgi4"]
 [ext_resource type="Script" uid="uid://c18ky8te2qerf" path="res://scripts/multi_display.gd" id="4_tefeu"]
 [ext_resource type="Texture2D" uid="uid://brvq3aidddijr" path="res://textures/number_strip.png" id="5_tefeu"]
-[ext_resource type="Resource" uid="uid://dfsxp6rnj3lf5" path="res://levels/level_data_test.tres" id="6_o6xl0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jyhfs"]
 bg_color = Color(0.815686, 0.415686, 0.847059, 0)
@@ -15,6 +14,7 @@ bg_color = Color(0.815686, 0.415686, 0.847059, 0)
 script = ExtResource("1_jfv3b")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
 anchors_preset = 10
@@ -76,7 +76,6 @@ size_flags_horizontal = 3
 
 [node name="GameControl" type="Node" parent="."]
 script = ExtResource("2_bgr0g")
-level_data = ExtResource("6_o6xl0")
 
 [node name="ViewportPanelContainer" type="PanelContainer" parent="GameControl"]
 unique_name_in_owner = true

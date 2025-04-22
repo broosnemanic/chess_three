@@ -4,6 +4,7 @@ enum COLOR{BLACK, WHITE}
 enum PIECE_TYPE{PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING , EMPTY, STONE}
 enum SQUARE_TYPE{NORMAL, CLIP, HOLE, STONE, ICE}
 enum MOVE_TYPE{TAKE, MATCH, SLIDE, FILL}
+enum LEVEL_TYPE{POINTS, THREE_KINGS}
 
 func random_piece_type() -> PIECE_TYPE:
 	var t_index: int = randi_range(0, 5) 

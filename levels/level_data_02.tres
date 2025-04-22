@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=2 format=3 uid="uid://4rn1q31okq5g"]
+
+[ext_resource type="Script" uid="uid://belp6enjrjms" path="res://scripts/level_data.gd" id="1_1nlpi"]
+
+[resource]
+script = ExtResource("1_1nlpi")
+piece_seed = 0
+board_seed = 0
+size = 0
+stones = Array[Vector2i]([])
+holes = Array[Vector2i]([])
+is_random_board = false
+metadata/_custom_type_script = "uid://belp6enjrjms"
