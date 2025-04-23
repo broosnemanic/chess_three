@@ -36,25 +36,42 @@ var turn_index: int					# What turn are we on for the current level?
 
 
 func _ready():
-	piece_rng.seed = 1
-	size = TEST_SIZE
-	composition = Composition._init_from_level_data(level_data)
-	match_finder = MatchFinder.new(composition)
-	position_viewport()
-	board.setup(composition._abst_board)
-	board.display_piece_set(composition._internal)
-	board.square_clicked.connect(on_square_clicked)
-	board.move_animation_finished.connect(on_move_animation_finished)
-	position_board()
-	reset_camera()
 	counter.is_rate_by_chunk = true
 	counter.chunk_rate = 1.0
-	slide(composition, composition.down)
-	load_score_data()
+	#composition = Composition._init_from_level_data(level_data)
+	#match_finder = MatchFinder.new(composition)
+	#position_viewport()
+	#board.setup(composition._abst_board)
+	#board.display_piece_set(composition._internal)
+	#board.square_clicked.connect(on_square_clicked)
+	#board.move_animation_finished.connect(on_move_animation_finished)
+	#position_board()
+	#reset_camera()
+	#slide(composition, composition.down)
+	#load_score_data()
 
 
 func load_level(a_level_data: LevelData):
-	pass
+	level_data = a_level_data
+	composition = Composition._init_from_level_data(level_data)
+	match_finder = MatchFinder.new(composition)
+	setup_board()
+	slide(composition, composition.down)
+
+
+
+func setup_board():
+	position_viewport()
+	board.clear()
+	board.setup(composition._abst_board)
+	board.display_piece_set(composition._internal)
+	if not board.square_clicked.is_connected(on_square_clicked):
+		board.square_clicked.connect(on_square_clicked)
+	if not board.move_animation_finished.is_connected(on_move_animation_finished):
+		board.move_animation_finished.connect(on_move_animation_finished)
+	position_board()
+	reset_camera()
+
 
 func save_score_data():
 	var save = FileAccess.open(save_path, FileAccess.WRITE)
@@ -97,7 +114,19 @@ func _input(event):
 			rotate_board(true)
 		if event.keycode == KEY_L:
 			rotate_board(false)
+		if event.keycode == KEY_1:
+			set_level(1)
+		if event.keycode == KEY_2:
+			set_level(2)
 
+
+func set_level(a_level_index: int):
+	match a_level_index:
+		1: 
+			level_data = load("res://levels/level_data_01.tres")
+		2: 
+			level_data = load("res://levels/level_data_02.tres")
+	load_level(level_data)
 
 # Increments roation by 1/4 turn
 # Ensures board_rotation (just an index) [0 - 3]

@@ -6,7 +6,9 @@
 script = ExtResource("1_1nlpi")
 piece_seed = 0
 board_seed = 0
-size = 0
+size = 10
+level_type = 0
+turn_count_max = 20
 stones = Array[Vector2i]([])
 holes = Array[Vector2i]([])
 is_random_board = false

@@ -34,6 +34,13 @@ func setup(a_abst_board: Array2DAbstractSquare):
 			place_square(t_abst_square)
 
 
+# Remove current boared squares
+func clear():
+	if squares == null: return
+	for i_square: Square in squares.linear():
+		i_square.queue_free()
+
+
 func display_piece_set(a_piece_set: Array2DGamePiece):
 	pieces = a_piece_set
 	for i_index: int in range(a_piece_set.linear().size()):
@@ -55,10 +62,8 @@ func place_square(a_abst_square: AbstractSquare):
 	squares.put(t_square, a_abst_square.coords)
 
 
-# Clear both selected shqare and valid move highlights
+# Clear both selected sqare and valid move highlights
 func clear_all_markers():
-	#var t_stack: Array = get_stack()
-	#print(self.get_script().get_path())
 	clear_selected_square()
 	clear_valid_move_highlights()
 
