@@ -16,38 +16,39 @@ script = ExtResource("1_jfv3b")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer"]
+[node name="TopUIContainer" type="VBoxContainer" parent="CanvasLayer"]
+unique_name_in_owner = true
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 64.0
 grow_horizontal = 2
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/TopUIContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+[node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ScrollingCounter" type="HBoxContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+[node name="ScrollingCounter" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 script = ExtResource("4_tbgi4")
 digit_texture = ExtResource("5_tefeu")
 
-[node name="MultiContainer" type="VBoxContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+[node name="MultiContainer" type="VBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
 layout_mode = 2
 
-[node name="Panel2" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer"]
+[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/MultiContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer/MultiContainer"]
 layout_mode = 2
 
-[node name="MultiDisplay" type="RichTextLabel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer/PanelContainer"]
+[node name="MultiDisplay" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer/MultiContainer/PanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 bbcode_enabled = true
@@ -57,20 +58,71 @@ scroll_active = false
 autowrap_mode = 0
 script = ExtResource("4_tefeu")
 
-[node name="MultiEffectLabel" type="RichTextLabel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer/PanelContainer"]
+[node name="MultiEffectLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer/MultiContainer/PanelContainer"]
 unique_name_in_owner = true
 clip_contents = false
 layout_mode = 2
 bbcode_enabled = true
 autowrap_mode = 0
 
-[node name="Panel" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer/MultiContainer"]
+[node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/MultiContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Panel2" type="Panel" parent="CanvasLayer/VBoxContainer/HBoxContainer"]
+[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/TopUIContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer2/HBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true
+text = "Turns Left: "
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer2/HBoxContainer2"]
+layout_mode = 2
+bbcode_enabled = true
+text = "To Beat: "
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer2/HBoxContainer2"]
+custom_minimum_size = Vector2(32, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="Camera2D" type="Camera2D" parent="."]
 

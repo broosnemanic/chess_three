@@ -90,8 +90,13 @@ func load_score_data():
 
 
 func position_viewport():
-	var t_width: float = get_viewport().size.x
-	var t_height: float = get_viewport().size.y
+	#var t_width: float = get_viewport().size.x
+	#var t_height: float = get_viewport().size.y
+	#var t_width: float = %TopUIContainer.size.x
+	#var t_height: float = %TopUIContainer.size.y
+	var t_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
+	var t_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	
 	var t_size: Vector2 = Vector2(t_width, t_width)
 	t_height = (t_height / 2.0) - t_width
 	p_container.size = Vector2(t_width, t_width)
@@ -118,6 +123,8 @@ func _input(event):
 			set_level(1)
 		if event.keycode == KEY_2:
 			set_level(2)
+		if event.keycode == KEY_3:
+			set_level(3)
 
 
 func set_level(a_level_index: int):
@@ -126,11 +133,32 @@ func set_level(a_level_index: int):
 			level_data = load("res://levels/level_data_01.tres")
 		2: 
 			level_data = load("res://levels/level_data_02.tres")
+		3: 
+			level_data = load("res://levels/level_data_03.tres")
 	load_level(level_data)
+
+
+func increment_turn_index():
+	turn_index += 1
+	print_debug(turn_index)
+
+
+func is_win_condition_met() -> bool:
+	return true
+	
+
+func on_win():
+	pass
+
+
+func on_lose():
+	pass
+
 
 # Increments roation by 1/4 turn
 # Ensures board_rotation (just an index) [0 - 3]
 func rotate_board(a_is_clockwise: bool):
+	increment_turn_index()
 	board_rotation += 1 if a_is_clockwise else -1
 	var t_angle: float = board_rotation * TAU / 4
 	var rot_tween = get_tree().create_tween()
@@ -312,7 +340,11 @@ func next_piece() -> GamePiece:
 
 # Note board_camera is a child of a subviewport - we want to center it within the viewport
 func reset_camera():
-	var t_width: float = %BoardSubViewport.size.x
+	#var t_width: float = %BoardSubViewport.size.x
+	var t_width: float = %TopUIContainer.size.x
+	print_debug("%BoardSubViewport.size.x: " + str(%BoardSubViewport.size.x))
+	print_debug("%ViewportPanelContainer.size.x: " + str(%ViewportPanelContainer.size.x))
+	print_debug("%TopUIContainer.size.x: " + str(%TopUIContainer.size.x))
 	#var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
 	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
 	board_camera.zoom = Vector2(t_width / t_board_width, t_width / t_board_width)
@@ -379,6 +411,7 @@ func on_square_clicked(a_square: Square):
 
 # Move a single piece (usually moved by player)
 func do_move(a_move: Move):
+	increment_turn_index()
 	score_multi = maxi(1, score_multi - 1)		# Player move reduces multiplier
 	composition.do_move(a_move)		# Happens in one frame
 	board.animate_move(a_move, composition.down)		# Takes MOVE_DURATION seconds

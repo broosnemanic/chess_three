@@ -24,6 +24,7 @@ Constants="*res://scripts/constants.gd"
 
 window/size/viewport_width=720
 window/size/viewport_height=1100
+window/stretch/mode="viewport"
 
 [editor_plugins]
 

@@ -6,10 +6,10 @@
 script = ExtResource("1_c14oh")
 piece_seed = 0
 board_seed = 0
-size = 6
+size = 8
 level_type = 0
 turn_count_max = 25
-stones = Array[Vector2i]([Vector2i(3, 3)])
-holes = Array[Vector2i]([Vector2i(1, 4)])
+stones = Array[Vector2i]([])
+holes = Array[Vector2i]([])
 is_random_board = false
 metadata/_custom_type_script = "uid://belp6enjrjms"
