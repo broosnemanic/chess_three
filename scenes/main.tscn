@@ -69,7 +69,23 @@ autowrap_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TurnsLeftLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[font_size=42][center][color=green ]23[/color][/center][/font_size]"
+autowrap_mode = 0
+
+[node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
