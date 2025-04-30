@@ -8,6 +8,7 @@ extends Node
 @onready var p_container: PanelContainer = %ViewportPanelContainer
 @onready var multi_display: RichTextLabel = %MultiDisplay
 @onready var counter: ScrollingCounter = %ScrollingCounter
+@onready var high_score_label: RichTextLabel = %HighScoreLabel
 @onready var physics_piece_prefab = preload("res://scenes/physics_piece.tscn")
 
 @onready var level_data: LevelData = preload("res://levels/level_data_01.tres")
@@ -32,23 +33,14 @@ var score_data: Dictionary = {0:0, 1:0, 2:0}
 var default_score_data: Dictionary = {0:0}
 var save_path = "user://score_date.save"
 var turn_index: int					# What turn are we on for the current level?
+var loaded_level_index: int
+var high_score: int					# Last high score for loaded level
 
 
 
 func _ready():
 	counter.is_rate_by_chunk = true
 	counter.chunk_rate = 1.0
-	#composition = Composition._init_from_level_data(level_data)
-	#match_finder = MatchFinder.new(composition)
-	#position_viewport()
-	#board.setup(composition._abst_board)
-	#board.display_piece_set(composition._internal)
-	#board.square_clicked.connect(on_square_clicked)
-	#board.move_animation_finished.connect(on_move_animation_finished)
-	#position_board()
-	#reset_camera()
-	#slide(composition, composition.down)
-	#load_score_data()
 
 
 func load_level(a_level_data: LevelData):
@@ -57,6 +49,9 @@ func load_level(a_level_data: LevelData):
 	match_finder = MatchFinder.new(composition)
 	setup_board()
 	slide(composition, composition.down)
+	load_score_data()
+	display_high_score(high_score)
+	update_turns_left_label()
 
 
 
@@ -74,10 +69,12 @@ func setup_board():
 
 
 func save_score_data():
-	var save = FileAccess.open(save_path, FileAccess.WRITE)
-	save.store_var(score_data)
-	save.flush()
-	print_debug("Saved: " + str(score_data))
+	if high_score < score:
+		score_data[loaded_level_index] = score
+		var save = FileAccess.open(save_path, FileAccess.WRITE)
+		save.store_var(score_data)
+		save.flush()
+		print_debug("Saved: " + str(score_data))
 
 
 func load_score_data():
@@ -85,8 +82,10 @@ func load_score_data():
 		var t_save = FileAccess.open(save_path, FileAccess.READ)
 		var t_data = t_save.get_var()
 		score_data = default_score_data.duplicate() if t_data == null else t_data
-		score = score_data[0]
-		counter.display_points(score_data[0])
+		if not score_data.has(loaded_level_index):
+			score_data[loaded_level_index] = 0
+		high_score = score_data[loaded_level_index]
+		#counter.display_points(score_data[0])
 
 
 func position_viewport():
@@ -135,12 +134,21 @@ func set_level(a_level_index: int):
 			level_data = load("res://levels/level_data_02.tres")
 		3: 
 			level_data = load("res://levels/level_data_03.tres")
+	loaded_level_index = a_level_index
 	load_level(level_data)
+
+
+func display_high_score(a_score: int):
+	var t_text: String = str(a_score)
+	t_text = BBUtil.at_centered(t_text)
+	t_text = BBUtil.at_size(t_text, 24)
+	t_text = BBUtil.at_color(t_text, "dark gray")
+	high_score_label.text = t_text
 
 
 func increment_turn_index():
 	turn_index += 1
-	print_debug(turn_index)
+	update_turns_left_label()
 
 
 func is_win_condition_met() -> bool:
@@ -153,6 +161,14 @@ func on_win():
 
 func on_lose():
 	pass
+
+
+func update_turns_left_label():
+	var t_text: String = str(level_data.turn_count_max - turn_index)
+	t_text = BBUtil.at_size(t_text, 42)
+	t_text = BBUtil.at_color(t_text, "green")
+	t_text = BBUtil.at_centered(t_text)
+	%TurnsLeftLabel.text = t_text
 
 
 # Increments roation by 1/4 turn
@@ -342,9 +358,6 @@ func next_piece() -> GamePiece:
 func reset_camera():
 	#var t_width: float = %BoardSubViewport.size.x
 	var t_width: float = %TopUIContainer.size.x
-	print_debug("%BoardSubViewport.size.x: " + str(%BoardSubViewport.size.x))
-	print_debug("%ViewportPanelContainer.size.x: " + str(%ViewportPanelContainer.size.x))
-	print_debug("%TopUIContainer.size.x: " + str(%TopUIContainer.size.x))
 	#var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
 	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
 	board_camera.zoom = Vector2(t_width / t_board_width, t_width / t_board_width)
@@ -481,8 +494,9 @@ func update_score_from_matches(a_matches: Array[Array]):
 		display_floating_points(i_set, t_points)
 		t_count += i_set.size() - 1
 	score_multi += t_count
-	score_data[0] = max(score_data[0], score)
+	score_data[loaded_level_index] = max(score_data[loaded_level_index], score)
 	save_score_data()
+	display_high_score(score_data[loaded_level_index])
 
 
 
