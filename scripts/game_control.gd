@@ -150,7 +150,7 @@ func set_level(a_level_index: int):
 
 
 func display_high_score(a_score: int):
-	var t_text: String = BBString.new(str(a_score)).center().size(24).color("dark gray").string
+	var t_text: String = BBString.new(str(a_score)).center().b.size(24).color("dark gray").string
 	high_score_label.text = t_text
 
 
