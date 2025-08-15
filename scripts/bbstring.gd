@@ -6,12 +6,18 @@ class_name BBString
 ## Note the .string is important because BBString functions return itself, so we have to ask for the string
 ## A BBString can be easily reset / reused by setting its string attribute: e.g. my_bbstring.string = "my_new_string"
 
-# Final product
-var string: String
 
+var string: String			# Final product
+var base_string: String		# String attribute before formatting
 
 func _init(a_string: String) -> void:
 	string = a_string
+	base_string = a_string
+
+
+func clear_formatting() -> BBString:
+	string = base_string
+	return self
 
 
 var bold: BBString:

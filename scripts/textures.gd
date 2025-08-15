@@ -1,20 +1,8 @@
 extends Node
 
-const PAWN_BLACK: Texture2D = preload("res://textures/pieces/pawn_black.png")
-const PAWN_WHITE: Texture2D = preload("res://textures/pieces/pawn_white.png")
-const ROOK_BLACK: Texture2D = preload("res://textures/pieces/rook_black.png")
-const ROOK_WHITE: Texture2D = preload("res://textures/pieces/rook_white.png")
-const KNIGHT_BLACK: Texture2D = preload("res://textures/pieces/knight_black.png")
-const KNIGHT_WHITE: Texture2D = preload("res://textures/pieces/knight_white.png")
-const BISHOP_BLACK: Texture2D = preload("res://textures/pieces/bishop_black.png")
-const BISHOP_WHITE: Texture2D = preload("res://textures/pieces/bishop_white.png")
-const QUEEN_BLACK: Texture2D = preload("res://textures/pieces/queen_black.png")
-const QUEEN_WHITE: Texture2D = preload("res://textures/pieces/queen_white.png")
-const KING_BLACK: Texture2D = preload("res://textures/pieces/king_black.png")
-const KING_WHITE: Texture2D = preload("res://textures/pieces/king_white.png")
 const DARK_SQUARE: Texture2D = preload("res://textures/board/DarkTile.png")
 const LIGHT_SQUARE: Texture2D = preload("res://textures/board/LightTile.png")
-
+const piece_textures: Resource = preload("res://resources/piece_textures.tres")
 
 func square_texture(a_type: Lists.SQUARE_TYPE, a_coords: Vector2i) -> Texture2D:
 	match a_type:
@@ -37,36 +25,37 @@ func piece_texture(a_type: Lists.PIECE_TYPE, a_color: Lists.COLOR) -> Texture2D:
 	match a_type:
 		Lists.PIECE_TYPE.PAWN:
 			if is_black:
-				return PAWN_BLACK
+				#return PAWN_BLACK
+				return piece_textures.black_pawn
 			else:
-				return PAWN_WHITE
+				return piece_textures.white_pawn
 		Lists.PIECE_TYPE.ROOK:
 			if is_black:
-				return ROOK_BLACK
+				return piece_textures.black_rook
 			else:
-				return ROOK_WHITE
+				return piece_textures.white_rook
 		Lists.PIECE_TYPE.KNIGHT:
 			if is_black:
-				return KNIGHT_BLACK
+				return piece_textures.black_knight
 			else:
-				return KNIGHT_WHITE
+				return piece_textures.white_knight
 		Lists.PIECE_TYPE.BISHOP:
 			if is_black:
-				return BISHOP_BLACK
+				return piece_textures.black_bishop
 			else:
-				return BISHOP_WHITE
+				return piece_textures.white_bishop
 		Lists.PIECE_TYPE.QUEEN:
 			if is_black:
-				return QUEEN_BLACK
+				return piece_textures.black_queen
 			else:
-				return QUEEN_WHITE
+				return piece_textures.white_queen
 		Lists.PIECE_TYPE.KING:
 			if is_black:
-				return KING_BLACK
+				return piece_textures.black_king
 			else:
-				return KING_WHITE
+				return piece_textures.white_king
 		_:
-			return PAWN_BLACK
+			return piece_textures.black_pawn
 
 
 func is_dark_coord(a_coord: Vector2i) -> bool:

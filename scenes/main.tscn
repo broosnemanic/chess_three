@@ -125,6 +125,23 @@ autowrap_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/TopUIContainer"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MessageBoxContainer" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 3.0
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="GameControl" type="Node" parent="."]

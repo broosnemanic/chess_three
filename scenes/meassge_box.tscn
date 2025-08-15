@@ -1,0 +1,107 @@
+[gd_scene load_steps=8 format=3 uid="uid://cmadqj8gttypk"]
+
+[ext_resource type="Script" uid="uid://ggl1420iayqw" path="res://scripts/scrolling_message_box.gd" id="1_7eeuc"]
+[ext_resource type="Script" uid="uid://bebf4dw4xcofe" path="res://scripts/scroll_container.gd" id="1_7ko7c"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5sgr6"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uax0k"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0cts6"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_obe68"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oskwg"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[node name="ScrollingMessageBox" type="PanelContainer"]
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_5sgr6")
+script = ExtResource("1_7eeuc")
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(128, 64)
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Panel" type="Panel" parent="VBoxContainer2"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_uax0k")
+
+[node name="MessageEffectsLabel" type="RichTextLabel" parent="VBoxContainer2"]
+unique_name_in_owner = true
+visible = false
+z_index = 10
+clip_contents = false
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+bbcode_enabled = true
+scroll_active = false
+
+[node name="Panel2" type="Panel" parent="VBoxContainer2"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0cts6")
+
+[node name="MessageScroller" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 32)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_obe68")
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 3
+script = ExtResource("1_7ko7c")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MessageScroller"]
+clip_contents = true
+custom_minimum_size = Vector2(128, 32)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 0
+
+[node name="ScrollRoom" type="Panel" parent="MessageScroller/VBoxContainer"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oskwg")
+
+[node name="Padding" type="Panel" parent="MessageScroller/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oskwg")
+
+[node name="MessageLabel" type="RichTextLabel" parent="MessageScroller/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+bbcode_enabled = true
+
+[node name="Padding2" type="Panel" parent="MessageScroller/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oskwg")
+
+[node name="Padding3" type="Panel" parent="MessageScroller/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oskwg")
+
+[node name="ScrollLabel" type="RichTextLabel" parent="MessageScroller/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+bbcode_enabled = true
+
+[node name="Padding4" type="Panel" parent="MessageScroller/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oskwg")
+
+[node name="ScrollRoom2" type="Panel" parent="MessageScroller/VBoxContainer"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_oskwg")

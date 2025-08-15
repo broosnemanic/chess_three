@@ -4,6 +4,7 @@ class_name GamePiece
 
 var type: Lists.PIECE_TYPE					# E.g. knight, stone, hole, etc
 var color: Lists.COLOR						# Probably only black
+var multiplier: int							# Score multi for this piece
 
 
 func _init(a_type: Lists.PIECE_TYPE, a_color: Lists.COLOR):

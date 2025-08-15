@@ -11,6 +11,7 @@ extends Node
 @onready var high_score_label: RichTextLabel = %HighScoreLabel
 @onready var physics_piece_prefab = preload("res://scenes/physics_piece.tscn")
 @onready var popup_prefab = preload("res://scenes/popup_message.tscn")
+@onready var message_box_prefab = preload("res://scenes/meassge_box.tscn")
 
 @onready var level_data: LevelData = preload("res://levels/level_data_01.tres")
 
@@ -36,20 +37,16 @@ var save_path = "user://score_date.save"
 var turn_index: int					# What turn are we on for the current level?
 var loaded_level_index: int
 var high_score: int					# Last high score for loaded level
-var popup: PopupPanel
-var popup_label: RichTextLabel
+#var popup: PopupPanel
+#var popup_label: RichTextLabel
+var message_box: PanelContainer
 
 
 func _ready():
 	counter.is_rate_by_chunk = true
 	counter.chunk_rate = 1.0
-	popup = popup_prefab.instantiate()
-	get_tree().root.add_child.call_deferred(popup)
-	popup.size = Vector2(500.0, 100.0)
-	#popup.position = p_container.position + Vector2((p_container.size.x) / 2.0, 500.0) - Vector2(popup.size.x, 0.0) / 2.0
-	#popup.position = Vector2(0.0, 0.0)
-	popup.visible = false
-
+	message_box = message_box_prefab.instantiate()
+	%MessageBoxContainer.add_child(message_box)
 
 
 func load_level(a_level_data: LevelData):
@@ -133,8 +130,6 @@ func _input(event):
 			set_level(2)
 		if event.keycode == KEY_3:
 			set_level(3)
-		if event.keycode == KEY_P:
-			popup.visible = not popup.visible
 
 
 func set_level(a_level_index: int):
@@ -170,18 +165,19 @@ func on_win():
 
 
 func on_lose():
-	display_popup_message("Out of  Moves!")
-
-
-func display_popup_message(a_message: String):
-	var t_text: String = a_message
-	t_text = BBUtil.at_color(t_text, "dark gray")
-	t_text = BBUtil.at_centered(t_text)
-	t_text = BBUtil.at_size(t_text, 24)
-	popup.set_text(t_text)
-	popup.visible = true
-	popup.position = Vector2((p_container.size.x) / 2.0, 0.0) + Vector2(-popup.size.x / 2.0, 200.0)
 	pass
+	message_box.set_message("Out of Moves :(")
+
+
+#func display_popup_message(a_message: String):
+	#var t_text: String = a_message
+	#t_text = BBUtil.at_color(t_text, "dark gray")
+	#t_text = BBUtil.at_centered(t_text)
+	#t_text = BBUtil.at_size(t_text, 24)
+	#popup.set_text(t_text)
+	#popup.visible = true
+	#popup.position = Vector2((p_container.size.x) / 2.0, 0.0) + Vector2(-popup.size.x / 2.0, 200.0)
+	#pass
 
 
 func update_turns_left_label():
