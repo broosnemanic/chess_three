@@ -11,6 +11,7 @@ signal square_clicked(a_square: Square)
 @onready var highlight: Sprite2D = $Highlight
 @onready var background: Sprite2D = $Background
 
+var multi_effect_material: ShaderMaterial = ShaderMaterial.new()
 var absract_square: AbstractSquare
 var is_locked: bool
 var is_selected: bool = false:
@@ -23,6 +24,17 @@ const PIECE_SCALE: Vector2 = Vector2(0.85, 0.85)
 func _ready() -> void:
 	ice.modulate = Color(1.0, 1.0, 1.0, 0.75)
 	piece.scale = PIECE_SCALE
+	multi_effect_material.shader = load("res://shaders/nested_tinted_zooms.gdshader")
+
+
+func add_multi_effect(a_multi: int):
+	piece.material = multi_effect_material
+	multi_effect_material.set_shader_parameter("layer_count", a_multi)
+	multi_effect_material.set_shader_parameter("sample", Textures.piece_textures.queen_color)
+
+
+func remove_multi_effect():
+	piece.material = null
 
 
 func initialize(a_absract_square: AbstractSquare) -> void:
@@ -48,6 +60,10 @@ func _input_event(_viewport, event, _shape_idx):
 func display_piece(a_piece: GamePiece):
 	piece.texture = Textures.piece_texture(a_piece.type, a_piece.color)
 	piece.scale = PIECE_SCALE
+	if a_piece.multiplier <= 0:
+		remove_multi_effect()
+	else:
+		add_multi_effect(a_piece.multiplier)
 
 
 # As it says

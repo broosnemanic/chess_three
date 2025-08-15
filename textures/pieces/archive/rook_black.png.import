@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpohcpp8rjoq5"
-path="res://.godot/imported/chess_rook_white.png-d7ba514c18d088d7a8aee50296e88e93.ctex"
+uid="uid://b2uf2vjpnf4lp"
+path="res://.godot/imported/rook_black.png-67fe804d98390aded5242d230baf7be6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/pieces/chess_rook_white.png"
-dest_files=["res://.godot/imported/chess_rook_white.png-d7ba514c18d088d7a8aee50296e88e93.ctex"]
+source_file="res://textures/pieces/archive/rook_black.png"
+dest_files=["res://.godot/imported/rook_black.png-67fe804d98390aded5242d230baf7be6.ctex"]
 
 [params]
 

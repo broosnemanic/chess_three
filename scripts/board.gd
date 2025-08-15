@@ -48,7 +48,10 @@ func display_piece_set(a_piece_set: Array2DGamePiece):
 		var t_linear = a_piece_set.linear()
 		var t_piece: GamePiece = t_linear[i_index]
 		if t_piece == null: continue
+		if i_index == 11:
+			t_piece.multiplier = 4
 		t_square.display_piece(t_piece)
+			
 
 
 # We start with an AbstractSquare as Square cannot be fully initialized until added to tree

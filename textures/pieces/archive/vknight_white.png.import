@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cjtnr2uvxwn0i"
-path="res://.godot/imported/king_black.png-3ac26230e27d0ad3c439d03d121a7d39.ctex"
+uid="uid://vy2u2fm0ch4p"
+path="res://.godot/imported/vknight_white.png-e297fc8ae245a89c6fefbc15c9ab64c5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/pieces/king_black.png"
-dest_files=["res://.godot/imported/king_black.png-3ac26230e27d0ad3c439d03d121a7d39.ctex"]
+source_file="res://textures/pieces/archive/vknight_white.png"
+dest_files=["res://.godot/imported/vknight_white.png-e297fc8ae245a89c6fefbc15c9ab64c5.ctex"]
 
 [params]
 

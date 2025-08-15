@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="PieceTextures" load_steps=14 format=3 uid="uid://lmbjkc642uph"]
+[gd_resource type="Resource" script_class="PieceTextures" load_steps=15 format=3 uid="uid://lmbjkc642uph"]
 
 [ext_resource type="Script" uid="uid://do0curnclrt0e" path="res://scripts/piece_textures.gd" id="1_p0umk"]
 [ext_resource type="Texture2D" uid="uid://c0ic1npqsbv8g" path="res://textures/pieces/black_bishop_sm.png" id="1_teicj"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dum3c7lxylff6" path="res://textures/pieces/black_pawn_sm.png" id="4_0bpo3"]
 [ext_resource type="Texture2D" uid="uid://b424j31gthlcp" path="res://textures/pieces/black_queen_sm.png" id="5_2cjao"]
 [ext_resource type="Texture2D" uid="uid://cvtpwt841id1i" path="res://textures/pieces/black_rook_sm.png" id="6_ccp0y"]
+[ext_resource type="Texture2D" uid="uid://coux7pliuqoqf" path="res://textures/pieces/queen_color.png" id="7_it44i"]
 [ext_resource type="Texture2D" uid="uid://bmhcbrendr1bw" path="res://textures/pieces/white_bishop_sm.png" id="8_lurno"]
 [ext_resource type="Texture2D" uid="uid://cdf0me18kbrmr" path="res://textures/pieces/white_king_sm.png" id="9_pnkdx"]
 [ext_resource type="Texture2D" uid="uid://cr6xl5vhctfxi" path="res://textures/pieces/white_knight_sm.png" id="10_saakl"]
@@ -28,4 +29,5 @@ white_knight = ExtResource("10_saakl")
 white_bishop = ExtResource("8_lurno")
 white_queen = ExtResource("12_lyyom")
 white_king = ExtResource("9_pnkdx")
+queen_color = ExtResource("7_it44i")
 metadata/_custom_type_script = "uid://do0curnclrt0e"
