@@ -58,5 +58,21 @@ func piece_texture(a_type: Lists.PIECE_TYPE, a_color: Lists.COLOR) -> Texture2D:
 			return piece_textures.black_pawn
 
 
+func multi_effect_texture(a_type: Lists.PIECE_TYPE) -> Texture2D:
+	match a_type:
+		Lists.PIECE_TYPE.PAWN:
+			return piece_textures.pawn_color
+		Lists.PIECE_TYPE.ROOK:
+			return piece_textures.rook_color
+		Lists.PIECE_TYPE.BISHOP:
+			return piece_textures.bishop_color
+		Lists.PIECE_TYPE.QUEEN:
+			return piece_textures.queen_color
+		Lists.PIECE_TYPE.KING:
+			return piece_textures.king_color
+		_:
+			return piece_textures.pawn_color
+
+
 func is_dark_coord(a_coord: Vector2i) -> bool:
 	return (a_coord.x % 2 == 0) == (a_coord.y % 2 == 0)

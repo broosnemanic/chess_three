@@ -15,4 +15,9 @@ class_name PieceTextures
 @export var white_queen: Texture2D
 @export var white_king: Texture2D
 
+@export var pawn_color: Texture2D
+@export var rook_color: Texture2D
+@export var knnight_color: Texture2D
+@export var bishop_color: Texture2D
 @export var queen_color: Texture2D
+@export var king_color: Texture2D

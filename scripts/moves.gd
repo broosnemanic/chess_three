@@ -1,6 +1,5 @@
 class_name Moves
 
-#TODO: Should a_start, a_end pairs instead be Move type?
 
 func valid_moveset(a_composition: Composition, a_square: AbstractSquare) -> Array[Move]:
 	var t_moves: Array[Move] = []

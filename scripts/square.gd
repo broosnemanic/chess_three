@@ -27,10 +27,11 @@ func _ready() -> void:
 	multi_effect_material.shader = load("res://shaders/nested_tinted_zooms.gdshader")
 
 
-func add_multi_effect(a_multi: int):
+func add_multi_effect(a_multi: int, a_piece_type: int):
 	piece.material = multi_effect_material
 	multi_effect_material.set_shader_parameter("layer_count", a_multi)
-	multi_effect_material.set_shader_parameter("sample", Textures.piece_textures.queen_color)
+	multi_effect_material.set_shader_parameter("sample", Textures.multi_effect_texture(a_piece_type))
+	multi_effect_material.set_shader_parameter("is_use_colors", false)
 
 
 func remove_multi_effect():
@@ -63,7 +64,7 @@ func display_piece(a_piece: GamePiece):
 	if a_piece.multiplier <= 0:
 		remove_multi_effect()
 	else:
-		add_multi_effect(a_piece.multiplier)
+		add_multi_effect(a_piece.multiplier, a_piece.type)
 
 
 # As it says

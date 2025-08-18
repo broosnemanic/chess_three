@@ -13,8 +13,9 @@ var _internal: Array2DGamePiece			# 2D array representing current arrangement of
 var _abst_board: Array2DAbstractSquare	# 2D array representing board (keeps track of special areas: e.g. holes)
 var selected_square: AbstractSquare		# Currently selected square, null if none
 var down: Vector2i						# Current direction that gravity is pulling
+var most_recent_player_move: Move				# The most recent move by player
 const default_down: Vector2i = Vector2i.DOWN
-#const default_down: Vector2i = Vector2i.LEFT
+
 
 
 # Setup to run on creation
@@ -548,8 +549,12 @@ func is_selectable_coord(a_coords: Vector2i) -> bool:
 func remove_matched_sets(a_set_of_sets: Array[Array]):
 	for i_set: Array[Vector2i] in a_set_of_sets:
 		for i_coord: Vector2i in i_set:
-			_internal.put(null, i_coord)
-
+			var t_piece: GamePiece = piece_at(i_coord)
+			if t_piece.multiplier <= 0:
+				_internal.put(null, i_coord)
+			else:
+				piece_at(i_coord).multiplier -= 1
+# TODO: Preserve pieces with multiplier > 0
 
 # Returns array of coords of squares with no piece
 func empty_coords() -> Array[Vector2i]:

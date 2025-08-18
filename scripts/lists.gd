@@ -13,14 +13,6 @@ func random_piece_type() -> PIECE_TYPE:
 
 func random_color() -> COLOR:
 	var t_index: int = randi_range(1, COLOR.size()) - 1
-	##TODO: This change is for testing
-	#t_index = randi_range(1, 4)
-	#if t_index == 1:
-		#t_index = 0
-	#else:
-		#t_index = 1
-	#
-	#
 	return color_from_index(t_index)
 
 

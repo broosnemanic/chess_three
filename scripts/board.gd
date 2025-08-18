@@ -85,8 +85,6 @@ func clear_valid_move_highlights():
 # Board emits signal to receive instructions on how to handle click
 func on_square_clicked(a_square: Square):
 	square_clicked.emit(a_square)
-	# TODO: handle takes, emit signal to game_control to, for example
-	# highlight valid moves from selected square
 
 
 func display_valid_highlights(a_destination_set: Array[Move]):
@@ -129,7 +127,6 @@ func on_animated_move_finished(a_move: Move, a_down: Vector2i):
 	t_start.piece.texture = null
 	# Restore display of moved piece to end square
 	t_end.display_piece(a_move.piece)
-	# TODO: Get the args
 	t_end.bounce(move_count_array.at(t_end.coords()), a_down)
 
 
@@ -153,8 +150,15 @@ func animate_next_moveset(a_down: Vector2i):
 func animate_match(a_matched_set: Array[Vector2i]):
 	for i_coord: Vector2i in a_matched_set:
 		var t_square: Square = squares.at(i_coord)
-		t_square.do_match_animation()
+		var t_piece: GamePiece = piece_at(i_coord)
+		var is_preserve: bool = t_piece != null and t_piece.multiplier > 0
+		if not is_preserve:
+			t_square.do_match_animation()
 		t_square.show_brief_emphasis()
+
+
+func piece_at(a_coord: Vector2i) -> GamePiece:
+	return pieces.at(a_coord)
 
 
 # Do match animation for all squares in a_set_of_sets

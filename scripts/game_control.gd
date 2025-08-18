@@ -430,6 +430,7 @@ func on_square_clicked(a_square: Square):
 										composition.piece_at(t_selected.coords),
 										t_piece)
 			composition.selected_square = null
+			composition.most_recent_player_move = t_move
 			do_move(t_move)
 		else:
 			composition.selected_square = null
@@ -452,12 +453,41 @@ func do_move(a_move: Move):
 # Find matches, remove from composition, animate (calculate score?)
 func do_matches():
 	var t_matches: Array[Array] = matched_sets()
+	update_multipliers(t_matches)
 	if not t_matches.is_empty():
 		composition.remove_matched_sets(t_matches)
 		update_score_from_matches(t_matches)
 		board.animate_matches(t_matches)
 		await get_tree().create_timer(Constants.MATCH_DURATION).timeout
 	do_slide()
+
+
+func update_multipliers(a_matches: Array[Array]):
+	for i_set: Array[Vector2i] in a_matches:
+		if i_set.size() <= 3: continue
+		var t_coord: Vector2i = upper_left_item(i_set)
+		var t_piece: GamePiece = composition.piece_at(t_coord)
+		t_piece.multiplier += i_set.size() - 0
+		pass
+
+func upper_left_item(a_set: Array[Vector2i]) -> Vector2i:
+	var t_lefts: Array[Vector2i] = []	# All vectors which are most left
+	var t_leftest: Vector2i = a_set[0]
+	var t_upest: Vector2i
+	for i_coord: Vector2i in a_set:		# Find leftmost x-coord
+		if i_coord.x <= t_leftest.x:
+			t_leftest = i_coord
+	for i_coord: Vector2i in a_set:		# Find all coords with leftmost x-coord
+		if i_coord.x == t_leftest.x:
+			t_lefts.append(i_coord)
+	t_upest = t_lefts[0]
+	for i_coord: Vector2i in a_set:
+		if i_coord.y <= t_upest.y:
+			t_upest = i_coord
+	return t_upest
+	
+
+
 
 
 func matched_sets() -> Array[Array]:
@@ -514,7 +544,7 @@ func update_score_from_matches(a_matches: Array[Array]):
 	score_data[loaded_level_index] = max(score_data[loaded_level_index], score)
 	save_score_data()
 	display_high_score(score_data[loaded_level_index])
-
+# TODO: Incorporate piece.multiplier
 
 
 func display_floating_points(a_set: Array[Vector2i], a_points: int):

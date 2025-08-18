@@ -403,7 +403,6 @@ func is_linear_set(a_coord_set: Array[Vector2i]) -> bool:
 
 
 # Is every coord in a_coord_set diagonal to at least one other coord in a_coord_set?
-# TODO: I think this allows for v-shaped sets - which is maybe a problem?
 func is_diagonal_set(a_coord_set: Array[Vector2i]) -> bool:
 	var t_coords: Array[Vector2i] = a_coord_set.duplicate()
 	for i_coord: Vector2i in a_coord_set:
