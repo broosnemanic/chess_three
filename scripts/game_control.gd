@@ -21,10 +21,10 @@ var match_finder: MatchFinder
 var board_rotation: int = 0			# [0, 1, 2, or 3] 0 == up; then clockwise by 90 deg (PI/2 rad)
 var size: int						# Size of one side of board
 var score: int						# As it says
-var score_multi: int:
-		set(a_multi):
-			score_multi = a_multi
-			multi_display.display_multi(a_multi)
+#var score_multi: int:
+		#set(a_multi):
+			#score_multi = a_multi
+			#multi_display.display_multi(a_multi)
 func get_multi_text(a_multi: int) -> String:
 	return "[font_size=24]" + str(a_multi) + " X[/font_size]"
 	
@@ -443,11 +443,23 @@ func on_square_clicked(a_square: Square):
 # Move a single piece (usually moved by player)
 func do_move(a_move: Move):
 	increment_turn_index()
-	score_multi = maxi(1, score_multi - 1)		# Player move reduces multiplier
 	composition.do_move(a_move)		# Happens in one frame
 	board.animate_move(a_move, composition.down)		# Takes MOVE_DURATION seconds
 	await get_tree().create_timer(Constants.MOVE_DURATION).timeout
+	process_take_score(a_move)
 	do_matches()
+
+
+func process_take_score(a_move: Move):
+	var t_points: int = take_score(a_move)
+	score += t_points
+	counter.display_points(t_points)
+	display_floating_points([a_move.end], t_points)
+
+
+func take_score(a_move: Move) -> int:
+	return piece_score_multi(a_move.piece) * maxi(a_move.piece.multiplier, 1)
+
 
 
 # Find matches, remove from composition, animate (calculate score?)
@@ -455,8 +467,8 @@ func do_matches():
 	var t_matches: Array[Array] = matched_sets()
 	update_multipliers(t_matches)
 	if not t_matches.is_empty():
-		composition.remove_matched_sets(t_matches)
 		update_score_from_matches(t_matches)
+		composition.remove_matched_sets(t_matches)
 		board.animate_matches(t_matches)
 		await get_tree().create_timer(Constants.MATCH_DURATION).timeout
 	do_slide()
@@ -467,9 +479,13 @@ func update_multipliers(a_matches: Array[Array]):
 		if i_set.size() <= 3: continue
 		var t_coord: Vector2i = upper_left_item(i_set)
 		var t_piece: GamePiece = composition.piece_at(t_coord)
-		t_piece.multiplier += i_set.size() - 0
+		t_piece.multiplier += i_set.size() - 2
 		pass
 
+
+# Of all leftmost coords, which is also highest?
+# Used to deterministically decide which of a matched set to make a multi piece
+# TODO: make relative to currnet down direction
 func upper_left_item(a_set: Array[Vector2i]) -> Vector2i:
 	var t_lefts: Array[Vector2i] = []	# All vectors which are most left
 	var t_leftest: Vector2i = a_set[0]
@@ -530,21 +546,39 @@ func fill_move_from_coord(a_coord: Vector2i) -> Move:
 	var t_start: Vector2i = a_coord + composition.size * t_down
 	return Move.new(t_start, a_coord, Lists.MOVE_TYPE.FILL, t_piece, null)
 
+
 # As it says
 func update_score_from_matches(a_matches: Array[Array]):
-	var t_count: int = 0
 	for i_set: Array[Vector2i] in a_matches:
 		var t_points: int = score_by_match_size(i_set.size())
-		t_points *= score_multi
+		t_points *= piece_score_multi(composition.piece_at(i_set[0]))
 		score += t_points
 		counter.display_points(t_points)
 		display_floating_points(i_set, t_points)
-		t_count += i_set.size() - 1
-	score_multi += t_count
 	score_data[loaded_level_index] = max(score_data[loaded_level_index], score)
 	save_score_data()
 	display_high_score(score_data[loaded_level_index])
 # TODO: Incorporate piece.multiplier
+
+
+# Roughly based on the inverse of the numberr of squares a piece could reach in one move
+func piece_score_multi(a_game_piece: GamePiece) -> int:
+	match a_game_piece.type:
+		Lists.PIECE_TYPE.PAWN:
+			return 16
+		Lists.PIECE_TYPE.ROOK:
+			return 2
+		Lists.PIECE_TYPE.KNIGHT:
+			return 8
+		Lists.PIECE_TYPE.BISHOP:
+			return 2
+		Lists.PIECE_TYPE.KING:
+			return 4
+		Lists.PIECE_TYPE.QUEEN:
+			return 1
+		_:
+			return 0
+
 
 
 func display_floating_points(a_set: Array[Vector2i], a_points: int):
@@ -556,8 +590,8 @@ func display_floating_points(a_set: Array[Vector2i], a_points: int):
 
 # Center coords for a set of coords; note output coords need not be int pair
 func group_center_local_pos(a_set: Array[Vector2i]) -> Vector2:
-	var t_xs: float
-	var t_ys: float
+	var t_xs: float = 0.0
+	var t_ys: float = 0.0
 	for i_coord: Vector2i in a_set:
 		var t_square: Square = board.squares.at(i_coord) 
 		t_xs += t_square.position.x
@@ -586,6 +620,6 @@ func print_composition():
 
 
 # Sets direction of gravity
-# Note this is not for regualr piece movement but for flying depris / pieces
+# Note this is not for regualr piece movement but for flying debris / pieces
 func set_gravity_dir(a_dir: Vector2):
 	PhysicsServer2D.area_set_param(get_viewport().find_world_2d().space, PhysicsServer2D.AREA_PARAM_GRAVITY_VECTOR, a_dir)

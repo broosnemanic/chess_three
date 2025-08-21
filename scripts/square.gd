@@ -32,6 +32,7 @@ func add_multi_effect(a_multi: int, a_piece_type: int):
 	multi_effect_material.set_shader_parameter("layer_count", a_multi)
 	multi_effect_material.set_shader_parameter("sample", Textures.multi_effect_texture(a_piece_type))
 	multi_effect_material.set_shader_parameter("is_use_colors", false)
+	multi_effect_material.set_shader_parameter("speed", 0.2)
 
 
 func remove_multi_effect():
