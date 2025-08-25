@@ -11,8 +11,11 @@ signal square_clicked(a_square: Square)
 @onready var highlight: Sprite2D = $Highlight
 @onready var background: Sprite2D = $Background
 
+
+
 var multi_effect_material: ShaderMaterial = ShaderMaterial.new()
 var absract_square: AbstractSquare
+var score_particles: GPUParticles2D = GPUParticles2D.new()
 var is_locked: bool
 var is_selected: bool = false:
 	set(a_is_selected):
@@ -24,7 +27,9 @@ const PIECE_SCALE: Vector2 = Vector2(0.85, 0.85)
 func _ready() -> void:
 	ice.modulate = Color(1.0, 1.0, 1.0, 0.75)
 	piece.scale = PIECE_SCALE
-	multi_effect_material.shader = load("res://shaders/nested_tinted_zooms.gdshader")
+	add_child(score_particles)
+	multi_effect_material.shader = load("res://shaders/nested_tinted_zooms_mod.gdshader")
+	setup_score_particles()
 
 
 func add_multi_effect(a_multi: int, a_piece_type: int):
@@ -33,6 +38,44 @@ func add_multi_effect(a_multi: int, a_piece_type: int):
 	multi_effect_material.set_shader_parameter("sample", Textures.multi_effect_texture(a_piece_type))
 	multi_effect_material.set_shader_parameter("is_use_colors", false)
 	multi_effect_material.set_shader_parameter("speed", 0.2)
+	multi_effect_material.set_shader_parameter("modulate", piece.modulate)
+		# Shaders do not repsect Sprite2D.modulate, so we have to set in manually
+
+
+func setup_score_particles():
+	score_particles.emitting = false
+	score_particles.one_shot = true
+	score_particles.z_index = 10
+	score_particles.texture = load("res://textures/star_1.png")
+	score_particles.amount = 10
+	score_particles.process_material = ParticleProcessMaterial.new()
+	score_particles.explosiveness = 0.67
+	score_particles.process_material.spread = 180.0
+	score_particles.process_material.angular_velocity_max = 200
+	score_particles.process_material.angular_velocity_min = -200
+	score_particles.process_material.gravity = Vector3(0.0, 200.0, 0.0)
+	score_particles.process_material.scale_max = 0.2
+	score_particles.process_material.scale_min = 0.2
+	score_particles.process_material.initial_velocity_max = 300.0
+	score_particles.process_material.initial_velocity_min = 100.0
+	score_particles.process_material.alpha_curve = new_curve()
+
+
+func new_curve() -> CurveTexture:
+	var t_curve_texure: CurveTexture = CurveTexture.new()
+	var t_curve: Curve = Curve.new()
+	t_curve_texure.curve = t_curve
+	t_curve.add_point(Vector2(0.0, 1.0))
+	#t_curve.add_point(Vector2(0.5, 1.0))
+	t_curve.add_point(Vector2(1.0, 0.0))
+	return t_curve_texure
+
+
+func emit_score_particles(a_score: int):
+	score_particles.amount = a_score
+	score_particles.emitting = true
+
+
 
 
 func remove_multi_effect():
@@ -61,11 +104,34 @@ func _input_event(_viewport, event, _shape_idx):
 
 func display_piece(a_piece: GamePiece):
 	piece.texture = Textures.piece_texture(a_piece.type, a_piece.color)
+	modulate_piece_by_color(piece, a_piece.color)
+	modulate_piece_by_type(piece, a_piece.type)
 	piece.scale = PIECE_SCALE
 	if a_piece.multiplier <= 0:
 		remove_multi_effect()
 	else:
 		add_multi_effect(a_piece.multiplier, a_piece.type)
+
+
+func modulate_piece_by_color(a_piece: Sprite2D, a_color: Lists.COLOR):
+	match a_color:
+		Lists.COLOR.WHITE:
+			a_piece.modulate = Color.BEIGE
+		Lists.COLOR.BLACK:
+			a_piece.modulate = Color.CRIMSON
+		_:
+			a_piece.modulate = Color.WHITE
+
+
+func modulate_piece_by_type(a_piece: Sprite2D, a_type: Lists.PIECE_TYPE):
+	var t_type_index: int = a_type as int
+	var t_offset: float
+	t_offset = (2.5 - t_type_index as float) / 40.0
+	a_piece.modulate += Color(t_offset, t_offset, t_offset)
+	
+
+
+
 
 
 # As it says

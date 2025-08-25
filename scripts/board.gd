@@ -48,8 +48,6 @@ func display_piece_set(a_piece_set: Array2DGamePiece):
 		var t_linear = a_piece_set.linear()
 		var t_piece: GamePiece = t_linear[i_index]
 		if t_piece == null: continue
-		if i_index == 11:
-			t_piece.multiplier = 4
 		t_square.display_piece(t_piece)
 			
 
@@ -261,3 +259,13 @@ func rotate_pieces(a_rotation: float):
 
 func set_piece_visible(a_square: Square):
 	a_square.piece.visible = true
+
+
+# Sometimes a piece will not display correctly after a move
+func refresh_pieces():
+	for i_x: int in range(size.x):
+		for i_y: int in range(size.y):
+			var t_coord: Vector2i = Vector2i(i_x, i_y)
+			var t_piece: GamePiece = piece_at(t_coord)
+			if t_piece != null:
+				squares.at(t_coord).display_piece(t_piece)

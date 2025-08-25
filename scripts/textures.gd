@@ -2,7 +2,7 @@ extends Node
 
 const DARK_SQUARE: Texture2D = preload("res://textures/board/DarkTile.png")
 const LIGHT_SQUARE: Texture2D = preload("res://textures/board/LightTile.png")
-const piece_textures: Resource = preload("res://resources/piece_textures.tres")
+const piece_textures: Resource = preload("res://resources/piece_textures_02.tres")
 
 func square_texture(a_type: Lists.SQUARE_TYPE, a_coords: Vector2i) -> Texture2D:
 	match a_type:

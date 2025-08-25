@@ -455,6 +455,7 @@ func process_take_score(a_move: Move):
 	score += t_points
 	counter.display_points(t_points)
 	display_floating_points([a_move.end], t_points)
+	display_points_particles([a_move.end], t_points)
 
 
 func take_score(a_move: Move) -> int:
@@ -518,6 +519,7 @@ func do_slide():
 	if t_moveset.is_empty():
 		do_fill()
 		await get_tree().create_timer(Constants.SLIDE_DURATION).timeout
+		board.refresh_pieces()
 	else:
 		board.animate_slide(t_moveset, composition.down)
 		await get_tree().create_timer(Constants.SLIDE_DURATION).timeout
@@ -555,6 +557,7 @@ func update_score_from_matches(a_matches: Array[Array]):
 		score += t_points
 		counter.display_points(t_points)
 		display_floating_points(i_set, t_points)
+		display_points_particles(i_set, t_points)
 	score_data[loaded_level_index] = max(score_data[loaded_level_index], score)
 	save_score_data()
 	display_high_score(score_data[loaded_level_index])
@@ -588,6 +591,13 @@ func display_floating_points(a_set: Array[Vector2i], a_points: int):
 	t_label.initialize(t_pos, a_points)
 
 
+
+func display_points_particles(a_set: Array[Vector2i], a_points: int):
+	var t_coord: Vector2i = center_coord(a_set)
+	var t_square: Square = board.squares.at(t_coord)
+	t_square.emit_score_particles(a_points)
+
+
 # Center coords for a set of coords; note output coords need not be int pair
 func group_center_local_pos(a_set: Array[Vector2i]) -> Vector2:
 	var t_xs: float = 0.0
@@ -598,6 +608,25 @@ func group_center_local_pos(a_set: Array[Vector2i]) -> Vector2:
 		t_ys += t_square.position.y
 	var t_center: Vector2 = Vector2(t_xs, t_ys) / (a_set.size() as float)
 	return t_center
+
+
+# Of <a_set> which coords are best fit for center
+func center_coord(a_set: Array[Vector2i]) -> Vector2i:
+	var t_coord: Vector2i = a_set[0]
+	var t_distance: int = _distance_score(a_set[0], a_set)
+	for i_coord: Vector2i in a_set:
+		if _distance_score(i_coord, a_set) < t_distance:
+			t_coord = i_coord
+	return t_coord
+
+
+# Distance metric between on coord and a set of coords
+func _distance_score(a_coord: Vector2i, a_set: Array[Vector2i]) -> int:
+	var t_total: int = 0
+	for i_coord: Vector2i in a_set:
+		var t_dif = i_coord - a_coord 
+		t_total += t_dif.x + t_dif.y
+	return absi(t_total)
 
 
 # From https://gdscript.com/articles/godot-recursive-functions/

@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="PieceTextures" load_steps=20 format=3 uid="uid://b7gop6msykan5"]
+
+[ext_resource type="Texture2D" uid="uid://diw5su2ycu3ey" path="res://textures/pieces/bishop_color_alt.png" id="1_4p3is"]
+[ext_resource type="Texture2D" uid="uid://c5fufm5o85a8k" path="res://textures/pieces/archive/bishop_black.png" id="2_4p3is"]
+[ext_resource type="Texture2D" uid="uid://cjtnr2uvxwn0i" path="res://textures/pieces/archive/king_black.png" id="3_62cfq"]
+[ext_resource type="Texture2D" uid="uid://feakqsh7p1pk" path="res://textures/pieces/archive/knight_black.png" id="4_km2bq"]
+[ext_resource type="Texture2D" uid="uid://cwm1mod35cjyo" path="res://textures/pieces/archive/pawn_black.png" id="5_wi4lk"]
+[ext_resource type="Texture2D" uid="uid://b3dn26lf8bknt" path="res://textures/pieces/archive/queen_black.png" id="6_pj0p1"]
+[ext_resource type="Texture2D" uid="uid://b2uf2vjpnf4lp" path="res://textures/pieces/archive/rook_black.png" id="7_dwjjn"]
+[ext_resource type="Texture2D" uid="uid://eqt7xgniiwq5" path="res://textures/pieces/king_color_alt.png" id="8_3w5e4"]
+[ext_resource type="Texture2D" uid="uid://bllhm7y6k81t8" path="res://textures/pieces/knight_color_alt.png" id="9_cnwf2"]
+[ext_resource type="Texture2D" uid="uid://m1jwk5qo4y5e" path="res://textures/pieces/pawn_color_alt.png" id="10_jw6lv"]
+[ext_resource type="Texture2D" uid="uid://coux7pliuqoqf" path="res://textures/pieces/queen_color.png" id="11_c4pva"]
+[ext_resource type="Texture2D" uid="uid://dabdm317dujhc" path="res://textures/pieces/rook_color_alt.png" id="12_nj5kg"]
+[ext_resource type="Script" uid="uid://do0curnclrt0e" path="res://scripts/piece_textures.gd" id="13_u3ohh"]
+[ext_resource type="Texture2D" uid="uid://cnnl5m6idng1x" path="res://textures/pieces/archive/bishop_white.png" id="14_54eb2"]
+[ext_resource type="Texture2D" uid="uid://f5w43nfsadhu" path="res://textures/pieces/archive/king_white.png" id="15_3w5e4"]
+[ext_resource type="Texture2D" uid="uid://c0xp542x2koil" path="res://textures/pieces/archive/knight_white.png" id="16_cnwf2"]
+[ext_resource type="Texture2D" uid="uid://bfh3xavr7bbqv" path="res://textures/pieces/archive/pawn_white.png" id="17_jw6lv"]
+[ext_resource type="Texture2D" uid="uid://bntp757er4amu" path="res://textures/pieces/archive/queen_white.png" id="18_c4pva"]
+[ext_resource type="Texture2D" uid="uid://1nhjk8u0pfub" path="res://textures/pieces/archive/rook_white.png" id="19_nj5kg"]
+
+[resource]
+script = ExtResource("13_u3ohh")
+black_pawn = ExtResource("5_wi4lk")
+black_rook = ExtResource("7_dwjjn")
+black_knight = ExtResource("4_km2bq")
+black_bishop = ExtResource("2_4p3is")
+black_queen = ExtResource("6_pj0p1")
+black_king = ExtResource("3_62cfq")
+white_pawn = ExtResource("17_jw6lv")
+white_rook = ExtResource("19_nj5kg")
+white_knight = ExtResource("16_cnwf2")
+white_bishop = ExtResource("14_54eb2")
+white_queen = ExtResource("18_c4pva")
+white_king = ExtResource("15_3w5e4")
+pawn_color = ExtResource("10_jw6lv")
+rook_color = ExtResource("12_nj5kg")
+knight_color = ExtResource("9_cnwf2")
+bishop_color = ExtResource("1_4p3is")
+queen_color = ExtResource("11_c4pva")
+king_color = ExtResource("8_3w5e4")
+metadata/_custom_type_script = "uid://do0curnclrt0e"
