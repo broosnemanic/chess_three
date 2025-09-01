@@ -48,6 +48,17 @@ func fill_with_pieces(a_is_random: bool):
 		else:
 			t_piece = next_piece()
 		_internal._internal[i] = t_piece
+		# TESTING
+		#if i == 3:
+			#t_piece.multiplier = 7
+		#if i == 5:
+			#t_piece.multiplier = 5
+		#if i == 7:
+			#t_piece.multiplier = 3
+		#if i == 9:
+			#t_piece.multiplier = 2
+
+		
 
 
 # Next piece using piece_seed
@@ -550,10 +561,10 @@ func remove_matched_sets(a_set_of_sets: Array[Array]):
 	for i_set: Array[Vector2i] in a_set_of_sets:
 		for i_coord: Vector2i in i_set:
 			var t_piece: GamePiece = piece_at(i_coord)
-			if t_piece.multiplier <= 0:
+			if t_piece.is_do_not_remove == false:
 				_internal.put(null, i_coord)
 			else:
-				piece_at(i_coord).multiplier -= 1
+				t_piece.is_do_not_remove = false
 # TODO: Preserve pieces with multiplier > 0
 
 # Returns array of coords of squares with no piece

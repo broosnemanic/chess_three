@@ -6,6 +6,7 @@ extends Node
 @onready var board: Node2D = %Board
 @onready var board_camera: Camera2D = %BoardCamera
 @onready var p_container: PanelContainer = %ViewportPanelContainer
+#@onready var m_container: MarginContainer = %BoardMarginContainer
 @onready var multi_display: RichTextLabel = %MultiDisplay
 @onready var counter: ScrollingCounter = %ScrollingCounter
 @onready var high_score_label: RichTextLabel = %HighScoreLabel
@@ -47,6 +48,7 @@ func _ready():
 	counter.chunk_rate = 1.0
 	message_box = message_box_prefab.instantiate()
 	%MessageBoxContainer.add_child(message_box)
+	set_level(1)
 
 
 func load_level(a_level_data: LevelData):
@@ -373,16 +375,11 @@ func next_piece() -> GamePiece:
 
 # Note board_camera is a child of a subviewport - we want to center it within the viewport
 func reset_camera():
-	#var t_width: float = %BoardSubViewport.size.x
 	var t_width: float = %TopUIContainer.size.x
-	#var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
 	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
 	board_camera.zoom = Vector2(t_width / t_board_width, t_width / t_board_width)
-	#board_camera.zoom = Vector2.ONE
 	var t_zoom: float =  t_width / t_board_width
 	board_camera.zoom = Vector2(t_zoom, t_zoom)
-	#board_camera.offset = Vector2(t_width, t_width)
-	pass
 
 
 func on_move_animation_finished(a_move: Move):
@@ -447,14 +444,22 @@ func do_move(a_move: Move):
 	board.animate_move(a_move, composition.down)		# Takes MOVE_DURATION seconds
 	await get_tree().create_timer(Constants.MOVE_DURATION).timeout
 	process_take_score(a_move)
+	remove_multi(a_move.piece)
 	do_matches()
+
+
+
+func remove_multi(a_piece: GamePiece):
+	a_piece.multiplier = 0
+	
+
 
 
 func process_take_score(a_move: Move):
 	var t_points: int = take_score(a_move)
 	score += t_points
 	counter.display_points(t_points)
-	display_floating_points([a_move.end], t_points)
+	display_floating_points([a_move.end], t_points, a_move.piece.multiplier)
 	display_points_particles([a_move.end], t_points)
 
 
@@ -481,7 +486,7 @@ func update_multipliers(a_matches: Array[Array]):
 		var t_coord: Vector2i = upper_left_item(i_set)
 		var t_piece: GamePiece = composition.piece_at(t_coord)
 		t_piece.multiplier += i_set.size() - 2
-		pass
+		t_piece.is_do_not_remove = true		# When matched sets are removed we want to skip
 
 
 # Of all leftmost coords, which is also highest?
@@ -553,10 +558,11 @@ func fill_move_from_coord(a_coord: Vector2i) -> Move:
 func update_score_from_matches(a_matches: Array[Array]):
 	for i_set: Array[Vector2i] in a_matches:
 		var t_points: int = score_by_match_size(i_set.size())
-		t_points *= piece_score_multi(composition.piece_at(i_set[0]))
+		var t_multi: int = piece_score_multi(composition.piece_at(i_set[0]))
+		t_points *= t_multi
 		score += t_points
 		counter.display_points(t_points)
-		display_floating_points(i_set, t_points)
+		display_floating_points(i_set, t_points, t_multi)
 		display_points_particles(i_set, t_points)
 	score_data[loaded_level_index] = max(score_data[loaded_level_index], score)
 	save_score_data()
@@ -584,11 +590,11 @@ func piece_score_multi(a_game_piece: GamePiece) -> int:
 
 
 
-func display_floating_points(a_set: Array[Vector2i], a_points: int):
+func display_floating_points(a_set: Array[Vector2i], a_points: int, a_multi: int):
 	var t_pos: Vector2 = global_pos_from_board_pos(group_center_local_pos(a_set))
 	var t_label: ScoreLabel = ScoreLabel.new()
 	add_child(t_label)
-	t_label.initialize(t_pos, a_points)
+	t_label.initialize(t_pos, a_points, a_multi)
 
 
 

@@ -4,7 +4,12 @@ class_name GamePiece
 
 var type: Lists.PIECE_TYPE					# E.g. knight, stone, hole, etc
 var color: Lists.COLOR						# Probably only black
-var multiplier: int							# Score multi for this piece
+var multiplier: int:							# Score multi for this piece
+	set(a_multi):
+		multiplier = a_multi
+		#print("type: " + str(type) + " color: " + str(color) + " multi: " + str(multiplier))
+var  is_do_not_remove: bool = false
+
 
 
 func _init(a_type: Lists.PIECE_TYPE, a_color: Lists.COLOR):

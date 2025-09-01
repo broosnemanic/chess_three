@@ -29,16 +29,22 @@ func _ready() -> void:
 	piece.scale = PIECE_SCALE
 	add_child(score_particles)
 	multi_effect_material.shader = load("res://shaders/nested_tinted_zooms_mod.gdshader")
+	#multi_effect_material.shader = load("res://shaders/glitch.gdshader")
 	setup_score_particles()
 
 
 func add_multi_effect(a_multi: int, a_piece_type: int):
+	var t_zoom: float = 2.0 + (a_multi - 2.0) / 5.0		# a_multi [2, 7] -> [2, 3]
+	var t_speed: float = 0.1 + (a_multi - 2.0) / 2.0	# a_multi [2, 7] -> [0.1, 2.6]
 	piece.material = multi_effect_material
 	multi_effect_material.set_shader_parameter("layer_count", a_multi)
 	multi_effect_material.set_shader_parameter("sample", Textures.multi_effect_texture(a_piece_type))
 	multi_effect_material.set_shader_parameter("is_use_colors", false)
-	multi_effect_material.set_shader_parameter("speed", 0.2)
+	multi_effect_material.set_shader_parameter("speed", t_speed)
 	multi_effect_material.set_shader_parameter("modulate", piece.modulate)
+	multi_effect_material.set_shader_parameter("max_zoom", t_zoom)
+	multi_effect_material.set_shader_parameter("boarder_zoom", t_zoom)
+	multi_effect_material.set_shader_parameter("is_only_bigger", false)
 		# Shaders do not repsect Sprite2D.modulate, so we have to set in manually
 
 

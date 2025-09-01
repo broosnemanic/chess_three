@@ -2,7 +2,7 @@ shader_type canvas_item;
 
 										//** Nested Tinted Zooms **//
 
-// Displays expanding nested tinted copies of <sample> behind a Sprite2D.texture 
+// Displays expanding nested tinted copies of <sample> behind a Sprite2D.texture
 // Notes on prefixes: t_ is for local (temp) variables; a_ is for func arguments
 // Questions? corpsinhere@gmail.com
 
@@ -123,7 +123,7 @@ void fragment() {
 				t_color = texture(sample, adjusted_uv);
 			}
 			if (t_color.a > 0.0){
-				t_color.a *= pow(1.0 - (size_scale / max_zoom), 0.4); // This value controls alpha falloff rate 
+				t_color.a *= pow(1.0 - (size_scale / max_zoom), 0.4); // This value controls alpha falloff rate
 				COLOR = t_color;
 				vec3 t_tint = COLOR.rgb;
 				if (is_use_colors){

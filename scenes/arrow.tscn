@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://b34civ0h6vl2h"]
+
+[ext_resource type="Script" uid="uid://bykwmanfca0bq" path="res://moving_arrow.gd" id="1_q8ifc"]
+[ext_resource type="Texture2D" uid="uid://c1t844tufi7ry" path="res://textures/line_red.png" id="2_7ckq1"]
+[ext_resource type="Texture2D" uid="uid://dm3n8n8vpa8p1" path="res://textures/head.png" id="3_q8ifc"]
+
+[sub_resource type="Curve2D" id="Curve2D_uvnur"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Path2D" type="Path2D" parent="."]
+curve = SubResource("Curve2D_uvnur")
+script = ExtResource("1_q8ifc")
+
+[node name="Line2D" type="Line2D" parent="Path2D"]
+texture = ExtResource("2_7ckq1")
+texture_mode = 1
+joint_mode = 2
+end_cap_mode = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Path2D/Line2D"]
+texture = ExtResource("3_q8ifc")
