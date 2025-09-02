@@ -6,7 +6,8 @@ extends Node
 @onready var board: Node2D = %Board
 @onready var board_camera: Camera2D = %BoardCamera
 @onready var p_container: PanelContainer = %ViewportPanelContainer
-#@onready var m_container: MarginContainer = %BoardMarginContainer
+@onready var m_container: MarginContainer = %BoardMarginContainer
+@onready var top_container: PanelContainer = %TopPanelContainer
 @onready var multi_display: RichTextLabel = %MultiDisplay
 @onready var counter: ScrollingCounter = %ScrollingCounter
 @onready var high_score_label: RichTextLabel = %HighScoreLabel
@@ -106,8 +107,12 @@ func position_viewport():
 	
 	var t_size: Vector2 = Vector2(t_width, t_width)
 	t_height = (t_height / 2.0) - t_width
-	p_container.size = Vector2(t_width, t_width)
-	p_container.position = Vector2(- t_width / 2.0, t_height)
+	#p_container.size = Vector2(t_width, t_width)
+	#p_container.position = Vector2(- t_width / 2.0, t_height)
+	#m_container.size = Vector2(t_width, t_width)
+	#m_container.position = Vector2(- t_width / 2.0, t_height)
+	top_container.size = Vector2(t_width, t_width)
+	top_container.position = Vector2(- t_width / 2.0, t_height)
 	%BoardSubViewport.size = t_size
 
 
@@ -376,6 +381,8 @@ func next_piece() -> GamePiece:
 # Note board_camera is a child of a subviewport - we want to center it within the viewport
 func reset_camera():
 	var t_width: float = %TopUIContainer.size.x
+	#t_width -= 2 * m_container.get_theme_constant("margin_top")
+	t_width -= 40.0
 	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
 	board_camera.zoom = Vector2(t_width / t_board_width, t_width / t_board_width)
 	var t_zoom: float =  t_width / t_board_width

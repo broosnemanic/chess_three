@@ -148,33 +148,41 @@ size_flags_horizontal = 3
 [node name="GameControl" type="Node" parent="."]
 script = ExtResource("2_bgr0g")
 
-[node name="ViewportPanelContainer" type="PanelContainer" parent="GameControl"]
+[node name="TopPanelContainer" type="PanelContainer" parent="GameControl"]
 unique_name_in_owner = true
-offset_right = 512.0
-offset_bottom = 512.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_jyhfs")
+offset_right = 40.0
+offset_bottom = 40.0
 
-[node name="TextureRect" type="TextureRect" parent="GameControl/ViewportPanelContainer"]
+[node name="TextureRect" type="TextureRect" parent="GameControl/TopPanelContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 texture = ExtResource("2_o6xl0")
 
-[node name="BoardViewportContainer" type="SubViewportContainer" parent="GameControl/ViewportPanelContainer"]
+[node name="BoardMarginContainer" type="MarginContainer" parent="GameControl/TopPanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="BoardSubViewport" type="SubViewport" parent="GameControl/ViewportPanelContainer/BoardViewportContainer"]
+[node name="ViewportPanelContainer" type="PanelContainer" parent="GameControl/TopPanelContainer/BoardMarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_jyhfs")
+
+[node name="BoardViewportContainer" type="SubViewportContainer" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="BoardSubViewport" type="SubViewport" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer"]
 unique_name_in_owner = true
 transparent_bg = true
 handle_input_locally = false
 physics_object_picking = true
 render_target_update_mode = 4
 
-[node name="BoardCamera" type="Camera2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
+[node name="BoardCamera" type="Camera2D" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
 unique_name_in_owner = true
 ignore_rotation = false
 
-[node name="Board" type="Node2D" parent="GameControl/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
+[node name="Board" type="Node2D" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
 unique_name_in_owner = true
 script = ExtResource("3_ulksu")
