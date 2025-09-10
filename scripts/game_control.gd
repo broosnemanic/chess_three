@@ -49,6 +49,7 @@ func _ready():
 	counter.chunk_rate = 1.0
 	message_box = message_box_prefab.instantiate()
 	%MessageBoxContainer.add_child(message_box)
+	#get_tree().create_timer(1.0).timeout.connect(set_level.bind(1))
 	set_level(1)
 
 
@@ -113,6 +114,7 @@ func position_viewport():
 	#m_container.position = Vector2(- t_width / 2.0, t_height)
 	top_container.size = Vector2(t_width, t_width)
 	top_container.position = Vector2(- t_width / 2.0, t_height)
+	#p_container.size = Vector2(t_width - 20.0, t_width - 20.0)
 	%BoardSubViewport.size = t_size
 
 
@@ -367,22 +369,11 @@ func random_linear_data(a_count: int) -> Array[GamePiece]:
 func next_piece() -> GamePiece:
 	return GamePiece.new(piece_rng.randi() % 5, piece_rng.randi() % 2)
 
-# Note board_camera is a child of a subviewport - we want to center it within the viewport
-#func reset_camera():
-	##var t_corner_offset: Vector2 = Vector2(Constants.SQUARE_WIDTH / 2, Constants.SQUARE_WIDTH / 2)
-	#var t_corner_offset: Vector2 = 0.25 * Vector2(Constants.SQUARE_WIDTH, Constants.SQUARE_WIDTH)
-	#var t_length: float = minf(get_viewport().size.x, get_viewport().size.y)
-	#var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
-	#board_camera.zoom = Vector2(t_length / t_board_width, t_length / t_board_width)
-	#board_camera.offset = Vector2(t_board_width / 2.0, t_board_width / 2.0) + t_corner_offset
-	##camera.offset = Vector2(t_board_width / 2.0, t_board_width / 2.0)
-
 
 # Note board_camera is a child of a subviewport - we want to center it within the viewport
 func reset_camera():
-	var t_width: float = %TopUIContainer.size.x
-	#t_width -= 2 * m_container.get_theme_constant("margin_top")
-	t_width -= 40.0
+	await get_tree().process_frame					# HACK: wait a frame for UI to resize cascade
+	var t_width: float = %BoardSubViewport.size.x
 	var t_board_width: int = board.size.x * Constants.SQUARE_WIDTH
 	board_camera.zoom = Vector2(t_width / t_board_width, t_width / t_board_width)
 	var t_zoom: float =  t_width / t_board_width
@@ -407,7 +398,22 @@ func toss_taken_piece(a_move: Move):
 	t_toss_piece.position = global_pos_from_board_pos(t_square.position)
 	add_child(t_toss_piece)
 	t_toss_piece.sprite.texture = Textures.piece_texture(a_move.taken_piece.type, a_move.taken_piece.color)
+	modulate_piece_by_color(t_toss_piece.sprite, a_move.taken_piece.color)
 	t_toss_piece.sprite.scale = board_camera.zoom * 0.85	# 0.85 is to match Square scaling
+
+
+# HACK: code duplicated from Square
+func modulate_piece_by_color(a_piece: Sprite2D, a_color: Lists.COLOR):
+	match a_color:
+		Lists.COLOR.WHITE:
+			a_piece.modulate = Color.BEIGE
+		Lists.COLOR.BLACK:
+			a_piece.modulate = Color.CRIMSON
+		_:
+			a_piece.modulate = Color.WHITE
+
+
+
 
 
 # Note this does not return the actual global value, but the value relative to the board viewport container
@@ -415,7 +421,8 @@ func global_pos_from_board_pos(a_pos: Vector2) -> Vector2:
 	var t_pos: Vector2 = a_pos + board.position +  Vector2(0, 0.125 * Constants.SQUARE_WIDTH)
 	t_pos = transformed_pos_from_board_rot(t_pos)
 	t_pos = t_pos * board_camera.zoom
-	t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
+	#t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
+	t_pos = Vector2(t_pos.x, t_pos.y - top_container.position.y)
 	return t_pos
 
 # Update composition and board depending on selection state

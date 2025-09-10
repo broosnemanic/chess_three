@@ -3,8 +3,9 @@ extends Sprite2D
 @export var head_texture: Texture2D
 @export var line_texture: Texture2D
 
-var is_cooldown_elapsed: bool = true
+@onready var icon: Sprite2D = $KnightSimpleBlack
 
+var is_cooldown_elapsed: bool = true
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:

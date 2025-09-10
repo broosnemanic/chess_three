@@ -1,8 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://bw0rhxbg2y5hf"]
+[gd_scene load_steps=8 format=3 uid="uid://bw0rhxbg2y5hf"]
 
 [ext_resource type="Script" uid="uid://c8fida5aajb62" path="res://scripts/main.gd" id="1_jfv3b"]
 [ext_resource type="Script" uid="uid://v6xxrbhcmp6j" path="res://scripts/game_control.gd" id="2_bgr0g"]
-[ext_resource type="Texture2D" uid="uid://mggmuvqtlx1u" path="res://textures/stone_wall.jpg" id="2_o6xl0"]
 [ext_resource type="Script" uid="uid://cm2q5n1dnor2b" path="res://scripts/board.gd" id="3_ulksu"]
 [ext_resource type="Script" uid="uid://cf26cgdrpdugi" path="res://scripts/scrolling_counter.gd" id="4_tbgi4"]
 [ext_resource type="Script" uid="uid://c18ky8te2qerf" path="res://scripts/multi_display.gd" id="4_tefeu"]
@@ -150,18 +149,18 @@ script = ExtResource("2_bgr0g")
 
 [node name="TopPanelContainer" type="PanelContainer" parent="GameControl"]
 unique_name_in_owner = true
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TextureRect" type="TextureRect" parent="GameControl/TopPanelContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-texture = ExtResource("2_o6xl0")
+offset_right = 1000.0
+offset_bottom = 826.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="BoardMarginContainer" type="MarginContainer" parent="GameControl/TopPanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
 [node name="ViewportPanelContainer" type="PanelContainer" parent="GameControl/TopPanelContainer/BoardMarginContainer"]
 unique_name_in_owner = true
@@ -171,12 +170,14 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_jyhfs")
 [node name="BoardViewportContainer" type="SubViewportContainer" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+stretch = true
 
 [node name="BoardSubViewport" type="SubViewport" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer"]
 unique_name_in_owner = true
 transparent_bg = true
 handle_input_locally = false
 physics_object_picking = true
+size = Vector2i(2, 2)
 render_target_update_mode = 4
 
 [node name="BoardCamera" type="Camera2D" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
