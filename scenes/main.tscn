@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bw0rhxbg2y5hf"]
+[gd_scene load_steps=9 format=3 uid="uid://bw0rhxbg2y5hf"]
 
 [ext_resource type="Script" uid="uid://c8fida5aajb62" path="res://scripts/main.gd" id="1_jfv3b"]
 [ext_resource type="Script" uid="uid://v6xxrbhcmp6j" path="res://scripts/game_control.gd" id="2_bgr0g"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://cf26cgdrpdugi" path="res://scripts/scrolling_counter.gd" id="4_tbgi4"]
 [ext_resource type="Script" uid="uid://c18ky8te2qerf" path="res://scripts/multi_display.gd" id="4_tefeu"]
 [ext_resource type="Texture2D" uid="uid://brvq3aidddijr" path="res://textures/number_strip.png" id="5_tefeu"]
+[ext_resource type="Texture2D" uid="uid://mggmuvqtlx1u" path="res://textures/stone_wall.jpg" id="6_o6xl0"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jyhfs"]
 bg_color = Color(0.815686, 0.415686, 0.847059, 0)
@@ -154,6 +155,12 @@ offset_bottom = 826.0
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
+[node name="TextureRect" type="TextureRect" parent="GameControl/TopPanelContainer"]
+layout_mode = 2
+texture = ExtResource("6_o6xl0")
+expand_mode = 2
+stretch_mode = 6
+
 [node name="BoardMarginContainer" type="MarginContainer" parent="GameControl/TopPanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -177,7 +184,7 @@ unique_name_in_owner = true
 transparent_bg = true
 handle_input_locally = false
 physics_object_picking = true
-size = Vector2i(2, 2)
+size = Vector2i(960, 786)
 render_target_update_mode = 4
 
 [node name="BoardCamera" type="Camera2D" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]

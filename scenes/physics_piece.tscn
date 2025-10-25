@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://wjsr4tjiudce"]
 
-[ext_resource type="Script" uid="uid://c2y4kgxefx1gx" path="res://scenes/physics_piece.gd" id="1_c2b3n"]
+[ext_resource type="Script" uid="uid://c2y4kgxefx1gx" path="res://scripts/physics_piece.gd" id="1_c2b3n"]
 [ext_resource type="Texture2D" uid="uid://b2twv4xcesine" path="res://textures/pieces/archive/chess_knight_black.png" id="1_jqf8g"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_c2b3n"]

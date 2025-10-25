@@ -6,9 +6,11 @@ var type: Lists.PIECE_TYPE					# E.g. knight, stone, hole, etc
 var color: Lists.COLOR						# Probably only black
 var multiplier: int:							# Score multi for this piece
 	set(a_multi):
+		is_multi_changed = multiplier != a_multi
 		multiplier = a_multi
 		#print("type: " + str(type) + " color: " + str(color) + " multi: " + str(multiplier))
 var  is_do_not_remove: bool = false
+var is_multi_changed: bool
 
 
 

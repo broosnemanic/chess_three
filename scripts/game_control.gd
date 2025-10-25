@@ -458,14 +458,17 @@ func do_move(a_move: Move):
 	board.animate_move(a_move, composition.down)		# Takes MOVE_DURATION seconds
 	await get_tree().create_timer(Constants.MOVE_DURATION).timeout
 	process_take_score(a_move)
-	remove_multi(a_move.piece)
+	if a_move.is_take:
+		remove_multi(a_move)
 	do_matches()
 
 
 
-func remove_multi(a_piece: GamePiece):
-	a_piece.multiplier = 0
-	
+func remove_multi(a_move: Move):
+	if a_move.piece.multiplier > 0:
+		a_move.piece.multiplier = 0
+		board.squares.at(a_move.start).remove_multi_effect(0.0)
+		board.squares.at(a_move.end).remove_multi_effect(0.5)
 
 
 
@@ -500,6 +503,8 @@ func update_multipliers(a_matches: Array[Array]):
 		var t_coord: Vector2i = upper_left_item(i_set)
 		var t_piece: GamePiece = composition.piece_at(t_coord)
 		t_piece.multiplier += i_set.size() - 2
+		#board.squares.at(t_coord).add_multi_effect(t_piece.multiplier, t_piece.type)
+		
 		t_piece.is_do_not_remove = true		# When matched sets are removed we want to skip
 
 

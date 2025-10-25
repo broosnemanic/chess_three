@@ -5,6 +5,7 @@ signal square_clicked(a_square: Square)
 
 @onready var selected: Sprite2D = $Selected
 @onready var piece: Sprite2D = $Piece
+@onready var multi_effect: Sprite2D = $Piece/MultiEffect
 @onready var stone: Sprite2D = $Stone
 @onready var ice: Sprite2D = $Ice
 @onready var hole: Sprite2D = $Hole
@@ -13,7 +14,7 @@ signal square_clicked(a_square: Square)
 
 
 
-var multi_effect_material: ShaderMaterial = ShaderMaterial.new()
+#var multi_effect_material: ShaderMaterial = ShaderMaterial.new()
 var absract_square: AbstractSquare
 var score_particles: GPUParticles2D = GPUParticles2D.new()
 var is_locked: bool
@@ -28,24 +29,53 @@ func _ready() -> void:
 	ice.modulate = Color(1.0, 1.0, 1.0, 0.75)
 	piece.scale = PIECE_SCALE
 	add_child(score_particles)
-	multi_effect_material.shader = load("res://shaders/nested_tinted_zooms_mod.gdshader")
+	#multi_effect_material.shader = load("res://shaders/nested_tinted_zooms_mod.gdshader")
 	#multi_effect_material.shader = load("res://shaders/glitch.gdshader")
 	setup_score_particles()
 
 
-func add_multi_effect(a_multi: int, a_piece_type: int):
-	var t_zoom: float = 2.0 + (a_multi - 2.0) / 5.0		# a_multi [2, 7] -> [2, 3]
-	var t_speed: float = 0.1 + (a_multi - 2.0) / 2.0	# a_multi [2, 7] -> [0.1, 2.6]
-	piece.material = multi_effect_material
-	multi_effect_material.set_shader_parameter("layer_count", a_multi)
-	multi_effect_material.set_shader_parameter("sample", Textures.multi_effect_texture(a_piece_type))
-	multi_effect_material.set_shader_parameter("is_use_colors", false)
-	multi_effect_material.set_shader_parameter("speed", t_speed)
-	multi_effect_material.set_shader_parameter("modulate", piece.modulate)
-	multi_effect_material.set_shader_parameter("max_zoom", t_zoom)
-	multi_effect_material.set_shader_parameter("boarder_zoom", t_zoom)
-	multi_effect_material.set_shader_parameter("is_only_bigger", false)
+func add_multi_effect(a_multi: int, a_piece_type: int, a_duration: float):
+	if not multi_effect.visible:
+		var t_mat: ShaderMaterial = multi_effect.material
+		var t_angles = multi_angles(a_multi, a_piece_type)
+		t_mat.set_shader_parameter("arrow_count", t_angles.size())
+		t_mat.set_shader_parameter("angles", t_angles)
+		set_multi_effect_visible(true)
+		#multi_effect.visible = true
+		var t_tween = get_tree().create_tween()
+		t_tween.tween_method(set_multi_fade_parameter, 0.0, 1.0, a_duration)
+	#t_tween.finished.connect(on_remove_multi_effect_finished)
+	#var t_zoom: float = 2.0 + (a_multi - 2.0) / 5.0		# a_multi [2, 7] -> [2, 3]
+	#var t_speed: float = 0.1 + (a_multi - 2.0) / 2.0	# a_multi [2, 7] -> [0.1, 2.6]
+	#piece.material = multi_effect_material
+	#multi_effect_material.set_shader_parameter("layer_count", a_multi)
+	#multi_effect_material.set_shader_parameter("sample", Textures.multi_effect_texture(a_piece_type))
+	#multi_effect_material.set_shader_parameter("is_use_colors", false)
+	#multi_effect_material.set_shader_parameter("speed", t_speed)
+	#multi_effect_material.set_shader_parameter("modulate", piece.modulate)
+	#multi_effect_material.set_shader_parameter("max_zoom", t_zoom)
+	#multi_effect_material.set_shader_parameter("boarder_zoom", t_zoom)
+	#multi_effect_material.set_shader_parameter("is_only_bigger", false)
 		# Shaders do not repsect Sprite2D.modulate, so we have to set in manually
+
+
+func multi_angles(a_multi: int, a_piece_type: Lists.PIECE_TYPE) -> Array[float]:
+	match a_piece_type:
+		Lists.PIECE_TYPE.PAWN:
+			return [-45.0, -135.0]
+		Lists.PIECE_TYPE.ROOK:
+			return [0.0, 90.0, 180.0, 270.0]		
+		Lists.PIECE_TYPE.KNIGHT:
+			return [-30.0, -60.0, -120.0, -150.0]
+		Lists.PIECE_TYPE.BISHOP:
+			return [-45.0, -225.0]
+		Lists.PIECE_TYPE.QUEEN:
+			return [45.0, 135.0, 225.0, 315.0]
+		Lists.PIECE_TYPE.KING:
+			return [0.0, 90.0, 180.0, 270.0, 45.0, 135.0, 225.0, 315.0]
+		_:
+			return [0.0, 270.0]
+
 
 
 func setup_score_particles():
@@ -84,9 +114,26 @@ func emit_score_particles(a_score: int):
 
 
 
-func remove_multi_effect():
-	piece.material = null
+func remove_multi_effect(a_duration: float):
+	pass
+	if a_duration == 0.0:
+		set_multi_effect_visible(false)
+		#multi_effect.visible = false
+	else:
+		var t_tween = get_tree().create_tween()
+		t_tween.tween_method(set_multi_fade_parameter, 1.0, 0.0, 0.5)
+		t_tween.finished.connect(on_remove_multi_effect_finished)
 
+
+func set_multi_fade_parameter(a_value: Variant):
+	multi_effect.material.set_shader_parameter("fade", a_value)
+
+
+func on_remove_multi_effect_finished():
+	set_multi_effect_visible(false)
+	#multi_effect.visible = false
+	set_multi_fade_parameter(1.0)
+	
 
 func initialize(a_absract_square: AbstractSquare) -> void:
 	absract_square = a_absract_square
@@ -113,10 +160,14 @@ func display_piece(a_piece: GamePiece):
 	modulate_piece_by_color(piece, a_piece.color)
 	modulate_piece_by_type(piece, a_piece.type)
 	piece.scale = PIECE_SCALE
-	if a_piece.multiplier <= 0:
-		remove_multi_effect()
-	else:
-		add_multi_effect(a_piece.multiplier, a_piece.type)
+	
+	if a_piece.multiplier <= 0 and multi_effect.visible:
+		pass
+		remove_multi_effect(0.0)
+	if a_piece.multiplier > 0:
+		var t_duration = 0.5 if a_piece.is_multi_changed else 0.0
+		add_multi_effect(a_piece.multiplier, a_piece.type, t_duration)
+		a_piece.is_multi_changed = false
 
 
 func modulate_piece_by_color(a_piece: Sprite2D, a_color: Lists.COLOR):
@@ -137,6 +188,9 @@ func modulate_piece_by_type(a_piece: Sprite2D, a_type: Lists.PIECE_TYPE):
 	
 
 
+func set_multi_effect_visible(a_is_visible: bool):
+	multi_effect.visible = a_is_visible
+	print_debug(multi_effect.visible)
 
 
 

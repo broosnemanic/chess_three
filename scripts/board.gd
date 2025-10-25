@@ -119,11 +119,20 @@ func on_animated_move_finished(a_move: Move, a_down: Vector2i):
 	move_animation_finished.emit(a_move)
 	var t_start: Square = squares.at(a_move.start)
 	var t_end: Square = squares.at(a_move.end)
+	#t_start.remove_multi_effect(0.0)
+	#t_end.remove_multi_effect(0.5)
+	await get_tree().process_frame	#Wthout this step we see the multi-effect on an empty square for a frame
 	# Move start square sprite back to start square position, and clear
 	t_start.piece.z_index = 1
 	t_start.piece.position = Vector2(0, 0)
 	t_start.piece.texture = null
 	# Restore display of moved piece to end square
+	# HACK: We need info from t_start to know if a multieffect is new or continuing
+	#if a_move.piece.multiplier > 0:
+		#if t_start.multi_effect.visible:
+			#t_end.add_multi_effect(a_move.piece.multiplier, a_move.piece.type, 0.0)
+		#else:
+			#t_end.add_multi_effect(a_move.piece.multiplier, a_move.piece.type, 0.5)
 	t_end.display_piece(a_move.piece)
 	t_end.bounce(move_count_array.at(t_end.coords()), a_down)
 
