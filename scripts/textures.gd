@@ -17,7 +17,7 @@ func square_texture(a_type: Lists.SQUARE_TYPE, a_coords: Vector2i) -> Texture2D:
 			else:
 				return Textures.LIGHT_SQUARE
 		_:
-			return Textures.KNIGHT_BLACK
+			return Textures.piece_textures.black_knight
 
 
 func piece_texture(a_type: Lists.PIECE_TYPE, a_color: Lists.COLOR) -> Texture2D:

@@ -38,6 +38,24 @@ func piece_type_from_index(a_index: int) -> PIECE_TYPE:
 			return PIECE_TYPE.PAWN
 
 
+func piece_name(a_piece_type: PIECE_TYPE) -> String:
+	match a_piece_type:
+		PIECE_TYPE.PAWN:
+			return "pawn"
+		PIECE_TYPE.ROOK:
+			return "rook"
+		PIECE_TYPE.KNIGHT:
+			return "knight"
+		PIECE_TYPE.BISHOP:
+			return "bishop"
+		PIECE_TYPE.QUEEN:
+			return "queen"
+		PIECE_TYPE.KING:
+			return "king"
+		_:
+			return "error"
+
+
 func color_from_index(a_index: int) -> COLOR:
 	match a_index:
 		0:

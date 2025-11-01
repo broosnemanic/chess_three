@@ -23,14 +23,6 @@ var match_finder: MatchFinder
 var board_rotation: int = 0			# [0, 1, 2, or 3] 0 == up; then clockwise by 90 deg (PI/2 rad)
 var size: int						# Size of one side of board
 var score: int						# As it says
-#var score_multi: int:
-		#set(a_multi):
-			#score_multi = a_multi
-			#multi_display.display_multi(a_multi)
-func get_multi_text(a_multi: int) -> String:
-	return "[font_size=24]" + str(a_multi) + " X[/font_size]"
-	
-	
 const TEST_SIZE: int = 10			# Keep board square; dif ratios can be faked using blocked off squares
 
 var score_data: Dictionary = {0:0, 1:0, 2:0}
@@ -39,9 +31,9 @@ var save_path = "user://score_date.save"
 var turn_index: int					# What turn are we on for the current level?
 var loaded_level_index: int
 var high_score: int					# Last high score for loaded level
-#var popup: PopupPanel
-#var popup_label: RichTextLabel
 var message_box: PanelContainer
+var multi_moves: Array[Move]		# List of moves that result in a multi_move
+									# E.g. multi_gem takes, is taken, or participates in a match
 
 
 func _ready():
@@ -49,7 +41,6 @@ func _ready():
 	counter.chunk_rate = 1.0
 	message_box = message_box_prefab.instantiate()
 	%MessageBoxContainer.add_child(message_box)
-	#get_tree().create_timer(1.0).timeout.connect(set_level.bind(1))
 	set_level(1)
 
 
@@ -62,7 +53,6 @@ func load_level(a_level_data: LevelData):
 	load_score_data()
 	display_high_score(high_score)
 	update_turns_left_label()
-
 
 
 func setup_board():
@@ -99,22 +89,12 @@ func load_score_data():
 
 
 func position_viewport():
-	#var t_width: float = get_viewport().size.x
-	#var t_height: float = get_viewport().size.y
-	#var t_width: float = %TopUIContainer.size.x
-	#var t_height: float = %TopUIContainer.size.y
 	var t_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
 	var t_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
-	
 	var t_size: Vector2 = Vector2(t_width, t_width)
 	t_height = (t_height / 2.0) - t_width
-	#p_container.size = Vector2(t_width, t_width)
-	#p_container.position = Vector2(- t_width / 2.0, t_height)
-	#m_container.size = Vector2(t_width, t_width)
-	#m_container.position = Vector2(- t_width / 2.0, t_height)
 	top_container.size = Vector2(t_width, t_width)
 	top_container.position = Vector2(- t_width / 2.0, t_height)
-	#p_container.size = Vector2(t_width - 20.0, t_width - 20.0)
 	%BoardSubViewport.size = t_size
 
 
@@ -178,17 +158,6 @@ func on_lose():
 	message_box.set_message("Out of Moves :(")
 
 
-#func display_popup_message(a_message: String):
-	#var t_text: String = a_message
-	#t_text = BBUtil.at_color(t_text, "dark gray")
-	#t_text = BBUtil.at_centered(t_text)
-	#t_text = BBUtil.at_size(t_text, 24)
-	#popup.set_text(t_text)
-	#popup.visible = true
-	#popup.position = Vector2((p_container.size.x) / 2.0, 0.0) + Vector2(-popup.size.x / 2.0, 200.0)
-	#pass
-
-
 func update_turns_left_label():
 	var t_text: String = str(level_data.turn_count_max - turn_index)
 	t_text = BBUtil.at_size(t_text, 24)
@@ -213,22 +182,7 @@ func rotate_board(a_is_clockwise: bool):
 	do_slide()
 
 
-# A_rot is the integer
-#func transformed_pos_from_board_rot(a_pos: Vector2) -> Vector2:
-	#var t_pos: Vector2
-	#match board_rotation:
-		#0:	# Default orientation
-			#t_pos = a_pos
-		#1:
-			#t_pos = Vector2(a_pos.y, -a_pos.x)
-		#2:
-			#t_pos = Vector2(-a_pos.x, -a_pos.y)
-		#3:
-			#t_pos = Vector2(-a_pos.y, a_pos.x)
-		#_:
-			#t_pos = Vector2.ZERO
-	#return t_pos
-			
+
 func transformed_pos_from_board_rot(a_pos: Vector2) -> Vector2:
 	var t_pos: Vector2
 	match composition.down:
@@ -243,7 +197,6 @@ func transformed_pos_from_board_rot(a_pos: Vector2) -> Vector2:
 		_:
 			t_pos = Vector2.ZERO
 	return t_pos
-			
 
 
 func board_rotation_to_vector(a_rot: int) -> Vector2:
@@ -285,15 +238,14 @@ func slide_test(a_composition: Composition):
 
 
 func move_test(a_composition: Composition):
-	#await get_tree().create_timer(1).timeout
 	var t_move: Move = a_composition.random_move()
 	if t_move != null:
 		a_composition.do_move(t_move)
 		board.animate_move(t_move)
 		print(t_move.start)
 		print(t_move.end)
-	
-	
+
+
 
 func slide(a_composition: Composition, a_direction: Vector2i):
 	a_composition.down = a_direction
@@ -360,7 +312,6 @@ func place_hole(a_coord: Vector2i, a_composition: Composition):
 func random_linear_data(a_count: int) -> Array[GamePiece]:
 	var t_data: Array[GamePiece] = []
 	for i_index: int in range(a_count):
-		#var t_piece = GamePiece.init_random()
 		var t_piece = next_piece()
 		t_data.append(t_piece)
 	return t_data
@@ -388,13 +339,7 @@ func on_move_animation_finished(a_move: Move):
 
 func toss_taken_piece(a_move: Move):
 	var t_square: Square = board.squares.at(a_move.end)
-	#var t_pos: Vector2 = t_square.position + board.position +  Vector2(0, 0.125 * Constants.SQUARE_WIDTH)
-	#t_pos = transformed_pos_from_board_rot(t_pos)
-	#t_pos = t_pos * board_camera.zoom
-	#t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
 	var t_toss_piece: PhysicsPiece = physics_piece_prefab.instantiate()
-	#t_toss_piece.position = t_pos
-	
 	t_toss_piece.position = global_pos_from_board_pos(t_square.position)
 	add_child(t_toss_piece)
 	t_toss_piece.sprite.texture = Textures.piece_texture(a_move.taken_piece.type, a_move.taken_piece.color)
@@ -414,14 +359,11 @@ func modulate_piece_by_color(a_piece: Sprite2D, a_color: Lists.COLOR):
 
 
 
-
-
 # Note this does not return the actual global value, but the value relative to the board viewport container
 func global_pos_from_board_pos(a_pos: Vector2) -> Vector2:
 	var t_pos: Vector2 = a_pos + board.position +  Vector2(0, 0.125 * Constants.SQUARE_WIDTH)
 	t_pos = transformed_pos_from_board_rot(t_pos)
 	t_pos = t_pos * board_camera.zoom
-	#t_pos = Vector2(t_pos.x, t_pos.y - p_container.position.y)
 	t_pos = Vector2(t_pos.x, t_pos.y - top_container.position.y)
 	return t_pos
 
@@ -459,7 +401,10 @@ func do_move(a_move: Move):
 	await get_tree().create_timer(Constants.MOVE_DURATION).timeout
 	process_take_score(a_move)
 	if a_move.is_take:
+		if a_move.piece.multiplier > 1 or (a_move.taken_piece != null and a_move.taken_piece.multiplier > 1):
+			store_multi_move(a_move)
 		remove_multi(a_move)
+	do_multi_moves()
 	do_matches()
 
 
@@ -488,13 +433,108 @@ func take_score(a_move: Move) -> int:
 # Find matches, remove from composition, animate (calculate score?)
 func do_matches():
 	var t_matches: Array[Array] = matched_sets()
-	update_multipliers(t_matches)
 	if not t_matches.is_empty():
+		store_multi_moves_from_matches(t_matches)
+		update_multipliers(t_matches)
 		update_score_from_matches(t_matches)
 		composition.remove_matched_sets(t_matches)
 		board.animate_matches(t_matches)
+		do_multi_moves()
 		await get_tree().create_timer(Constants.MATCH_DURATION).timeout
 	do_slide()
+
+
+
+func store_multi_moves_from_matches(a_matches: Array[Array]):
+	var t_flat: Array[Vector2i] = []
+	for i_set: Array[Vector2i] in a_matches:
+		t_flat.append_array(i_set)
+	for i_coord: Vector2i in t_flat:
+		var t_piece: GamePiece = composition.piece_at(i_coord)
+		if t_piece.multiplier > 1:
+			t_piece = GamePiece.init_from_piece(t_piece)
+			var t_move: Move = Move.new(i_coord, i_coord, Lists.MOVE_TYPE.MATCH, t_piece, null)
+			multi_moves.append(t_move)
+
+
+
+func do_multi_moves():
+	print_rich("do_multi_moves called " + str(multi_moves.size()))
+	var t_move: Move = multi_moves.pop_front()
+	if t_move != null:
+		do_multi_move(t_move)
+	# Iterate through array of multi_moves and effect them
+	# set array of multi_moves = temp array multimoves (holds new multimoves triggered by this round of multimoves)
+	# if array of multi_moves is not empty -> do_multi_moves()
+
+
+func do_multi_move(a_move: Move):
+	var t_masks: Array[Vector2i] = multi_move_masks(a_move)
+	for i_mask: Vector2i in t_masks:
+		var t_move: Move = Move.init_from_move(a_move)
+		var t_coord: Vector2i = t_move.end + i_mask
+		var t_taken: GamePiece = composition.piece_at(t_coord)
+		if t_taken == null: continue
+		t_move.end = t_coord
+		t_move.taken_piece = t_taken
+		do_multi_move_singlet(t_move)
+	#var t_coord: Vector2i = a_move.end + Vector2i(0, -1)
+	#var t_taken: GamePiece = composition.piece_at(t_coord)
+	#if t_taken == null: return
+	#var t_move: Move = Move.init_from_move(a_move)
+	#t_move.end = t_coord
+	#t_move.taken_piece = t_taken
+	#do_multi_move_singlet(t_move)
+
+
+
+# Multi_move results in removal of multiple pieces - this removes one
+func do_multi_move_singlet(a_move: Move):
+	composition.remove_piece_at(a_move.end)
+	board.squares.at(a_move.end).piece.texture = null
+	board.squares.at(a_move.end).show_brief_emphasis()
+	toss_taken_piece(a_move)
+
+
+# Returns set of offsets for a given piece/multi multi_move
+func multi_move_masks(a_move: Move) -> Array[Vector2i]:
+	var t_piece: GamePiece = a_move.piece
+	match t_piece.type:
+		Lists.PIECE_TYPE.PAWN:
+			return rotated_vector_set([Vector2i(-1, -1), Vector2i(1, -1)])
+		_:
+			return rotated_vector_set([Vector2i(0, -1)])
+
+
+
+func rotated_vector(a_vector: Vector2i, a_direction: Vector2i) -> Vector2i:
+	match a_direction:
+		Vector2i.DOWN:	# Default gravity direction
+			return a_vector
+		Vector2i.UP:
+			return Vector2i(a_vector.x, -1 * a_vector.y)
+		Vector2i.LEFT:
+			return Vector2i(-1 * a_vector.y, a_vector.x)
+		Vector2i.RIGHT:
+			return Vector2i(a_vector.y, a_vector.x)
+	return Vector2i.ZERO
+
+
+
+func rotated_vector_set(a_set: Array[Vector2i]) -> Array[Vector2i]:
+	var t_set: Array[Vector2i] = []
+	for i_vector: Vector2i in a_set:
+		t_set.append(rotated_vector(i_vector, composition.down))
+	return t_set
+
+
+# Preserve data associated with move and add it to the multi_move stack
+func store_multi_move(a_move: Move):
+	var t_piece: GamePiece = GamePiece.init_from_piece(a_move.piece)
+	var t_taken: GamePiece = GamePiece.init_from_piece(a_move.taken_piece)
+	var t_move: Move = Move.new(a_move.start, a_move.end, a_move.type_from_bools(), t_piece, t_taken)
+	multi_moves.append(t_move)
+
 
 
 func update_multipliers(a_matches: Array[Array]):
@@ -526,14 +566,13 @@ func upper_left_item(a_set: Array[Vector2i]) -> Vector2i:
 		if i_coord.y <= t_upest.y:
 			t_upest = i_coord
 	return t_upest
-	
-
 
 
 
 func matched_sets() -> Array[Array]:
 	match_finder.find_matched_sets()
 	return match_finder.all_matched_sets
+
 
 # Move pieces to fill empty spaces (and refill?)
 func do_slide():
@@ -557,12 +596,7 @@ func do_fill():
 	var t_moves: Array[Move] = composition.fill_moveset()
 	composition.fill(t_moves)
 	board.animate_fill(t_moves, composition.down)
-	#var t_coords: Array[Vector2i] = composition.empty_coords()
-	#var t_moves: Array[Move] = []
-	#composition.fill()
-	#for i_coord: Vector2i in t_coords:
-		#t_moves.append(fill_move_from_coord(i_coord))
-	#board.animate_fill(t_moves, composition.down)
+
 
 # Generate a move for animation purposes to show new piece entering board
 # Note composition.fill() is already run so new pieces are at their end position

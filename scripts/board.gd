@@ -18,11 +18,6 @@ var move_count_array: Array2DInt		# item is count of pieces above which have mov
 										# for calulating bounce depth
 
 
-#func _ready() -> void:
-	#var t_piece: PhysicsPiece = physics_piece_prefab.instantiate()
-	#add_child(t_piece)
-
-
 func setup(a_abst_board: Array2DAbstractSquare):
 	size = a_abst_board.size
 	move_count_array = Array2DInt.new(size)
@@ -119,20 +114,12 @@ func on_animated_move_finished(a_move: Move, a_down: Vector2i):
 	move_animation_finished.emit(a_move)
 	var t_start: Square = squares.at(a_move.start)
 	var t_end: Square = squares.at(a_move.end)
-	#t_start.remove_multi_effect(0.0)
-	#t_end.remove_multi_effect(0.5)
 	await get_tree().process_frame	#Wthout this step we see the multi-effect on an empty square for a frame
 	# Move start square sprite back to start square position, and clear
 	t_start.piece.z_index = 1
 	t_start.piece.position = Vector2(0, 0)
 	t_start.piece.texture = null
 	# Restore display of moved piece to end square
-	# HACK: We need info from t_start to know if a multieffect is new or continuing
-	#if a_move.piece.multiplier > 0:
-		#if t_start.multi_effect.visible:
-			#t_end.add_multi_effect(a_move.piece.multiplier, a_move.piece.type, 0.0)
-		#else:
-			#t_end.add_multi_effect(a_move.piece.multiplier, a_move.piece.type, 0.5)
 	t_end.display_piece(a_move.piece)
 	t_end.bounce(move_count_array.at(t_end.coords()), a_down)
 
@@ -184,10 +171,8 @@ func animate_fill(a_moves: Array[Move], a_down: Vector2i):
 		var t_piece: Sprite2D = t_square.piece
 		t_piece.position = -1.0 * a_down * t_board_width
 		var tween = get_tree().create_tween()#.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN_OUT)
-		#var t_distance: float = abs((i_move.end * a_down).length()) + 1.0
 		var t_distance: float = move_count_array.at(t_square.coords()) + 1.0
 		tween.tween_property(t_piece, 'position', Vector2.ZERO, i_move.animation_duration())
-		#tween.finished.connect(down_bounce.bind(t_piece, a_down, t_distance))
 		tween.finished.connect(t_square.bounce.bind(t_distance, a_down))
 
 
@@ -204,11 +189,7 @@ func refresh_move_count_array(a_moves: Array[Move], a_down: Vector2i):
 	var t_is_moved_array: Array2DBool = Array2DBool.new(size)
 	for i_move: Move in a_moves:
 		t_is_moved_array.put(true, i_move.end)
-
-
 	for i: int in size.x:
-		#var t_start: int = 1 if is_negative_direction(a_down) else (size.x - 2)
-		#var t_end: int = size.x - 1 if is_negative_direction(a_down) else 0
 		var t_direction: int = -1 if is_negative_direction(a_down) else 1
 		var t_current: Vector2i
 		var t_lower: Vector2i
@@ -241,30 +222,12 @@ func is_negative_direction(a_direction: Vector2i) -> bool:
 	return false
 
 
-#func down_bounce(a_piece: Sprite2D, a_down: Vector2i, a_distance: float):
-	#var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
-	#var rot_tween = get_tree().create_tween()
-	#var t_rot_saved: float = a_piece.rotation
-	#var t_rot: float = randf_range(-0.05, 0.05)
-	##down_tween.tween_property(a_piece, 'position', Vector2(0, 2.0), Constants.DOWN_BOUNCE_DURATION)
-	#down_tween.tween_property(a_piece, 'position', 10.0 * a_distance * a_down, Constants.DOWN_BOUNCE_DURATION)
-	#down_tween.finished.connect(up_bounce.bind(a_piece, t_rot_saved))
-	#rot_tween.tween_property(a_piece, 'rotation', t_rot + t_rot_saved, Constants.DOWN_BOUNCE_DURATION)
-	#
-	#
-	#
-#func up_bounce(a_piece: Sprite2D, a_saved_rot: float):
-	#var up_tween = get_tree().create_tween()#.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
-	#up_tween.tween_property(a_piece, 'position', Vector2.ZERO, Constants.UP_BOUNCE_DURATION)
-	#var rot_tween = get_tree().create_tween()
-	#rot_tween.tween_property(a_piece, 'rotation', a_saved_rot, Constants.UP_BOUNCE_DURATION)
-
-
 # Rotate piece sprites to counter board rotation (so the still look upright)
 func rotate_pieces(a_rotation: float):
 	for i_square: Square in squares.linear():
 		i_square.rotate_piece(a_rotation)
 	pass
+
 
 func set_piece_visible(a_square: Square):
 	a_square.piece.visible = true

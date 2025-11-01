@@ -1,6 +1,8 @@
 extends Area2D
 class_name Square
 
+## Handles display of square and effects (e.g. multi effect, hole, etc) ##
+
 signal square_clicked(a_square: Square)
 
 @onready var selected: Sprite2D = $Selected
@@ -13,11 +15,9 @@ signal square_clicked(a_square: Square)
 @onready var background: Sprite2D = $Background
 
 
-
-#var multi_effect_material: ShaderMaterial = ShaderMaterial.new()
-var absract_square: AbstractSquare
-var score_particles: GPUParticles2D = GPUParticles2D.new()
-var is_locked: bool
+var absract_square: AbstractSquare							# Data version used to build this
+var score_particles: GPUParticles2D = GPUParticles2D.new()	# More score -> more shiny particles!
+var is_locked: bool											# True -> unselectable
 var is_selected: bool = false:
 	set(a_is_selected):
 		is_selected = a_is_selected
@@ -29,11 +29,10 @@ func _ready() -> void:
 	ice.modulate = Color(1.0, 1.0, 1.0, 0.75)
 	piece.scale = PIECE_SCALE
 	add_child(score_particles)
-	#multi_effect_material.shader = load("res://shaders/nested_tinted_zooms_mod.gdshader")
-	#multi_effect_material.shader = load("res://shaders/glitch.gdshader")
 	setup_score_particles()
 
 
+# Adds pulsing arrows in directions that megagem will take on activation
 func add_multi_effect(a_multi: int, a_piece_type: int, a_duration: float):
 	if not multi_effect.visible:
 		var t_mat: ShaderMaterial = multi_effect.material
@@ -41,25 +40,13 @@ func add_multi_effect(a_multi: int, a_piece_type: int, a_duration: float):
 		t_mat.set_shader_parameter("arrow_count", t_angles.size())
 		t_mat.set_shader_parameter("angles", t_angles)
 		set_multi_effect_visible(true)
-		#multi_effect.visible = true
 		var t_tween = get_tree().create_tween()
-		t_tween.tween_method(set_multi_fade_parameter, 0.0, 1.0, a_duration)
-	#t_tween.finished.connect(on_remove_multi_effect_finished)
-	#var t_zoom: float = 2.0 + (a_multi - 2.0) / 5.0		# a_multi [2, 7] -> [2, 3]
-	#var t_speed: float = 0.1 + (a_multi - 2.0) / 2.0	# a_multi [2, 7] -> [0.1, 2.6]
-	#piece.material = multi_effect_material
-	#multi_effect_material.set_shader_parameter("layer_count", a_multi)
-	#multi_effect_material.set_shader_parameter("sample", Textures.multi_effect_texture(a_piece_type))
-	#multi_effect_material.set_shader_parameter("is_use_colors", false)
-	#multi_effect_material.set_shader_parameter("speed", t_speed)
-	#multi_effect_material.set_shader_parameter("modulate", piece.modulate)
-	#multi_effect_material.set_shader_parameter("max_zoom", t_zoom)
-	#multi_effect_material.set_shader_parameter("boarder_zoom", t_zoom)
-	#multi_effect_material.set_shader_parameter("is_only_bigger", false)
-		# Shaders do not repsect Sprite2D.modulate, so we have to set in manually
+		t_tween.tween_method(_set_multi_fade_parameter, 0.0, 1.0, a_duration)
 
 
-func multi_angles(a_multi: int, a_piece_type: Lists.PIECE_TYPE) -> Array[float]:
+# Directions that point towards target pieces on megagem activation
+# TODO: incorporate a_multi
+func multi_angles(_a_multi: int, a_piece_type: Lists.PIECE_TYPE) -> Array[float]:
 	match a_piece_type:
 		Lists.PIECE_TYPE.PAWN:
 			return [-45.0, -135.0]
@@ -77,7 +64,7 @@ func multi_angles(a_multi: int, a_piece_type: Lists.PIECE_TYPE) -> Array[float]:
 			return [0.0, 270.0]
 
 
-
+# As it says
 func setup_score_particles():
 	score_particles.emitting = false
 	score_particles.one_shot = true
@@ -94,45 +81,46 @@ func setup_score_particles():
 	score_particles.process_material.scale_min = 0.2
 	score_particles.process_material.initial_velocity_max = 300.0
 	score_particles.process_material.initial_velocity_min = 100.0
-	score_particles.process_material.alpha_curve = new_curve()
+	score_particles.process_material.alpha_curve = _new_curve()
 
 
-func new_curve() -> CurveTexture:
+# Math for setting alpha dropoff of particles
+func _new_curve() -> CurveTexture:
 	var t_curve_texure: CurveTexture = CurveTexture.new()
 	var t_curve: Curve = Curve.new()
 	t_curve_texure.curve = t_curve
 	t_curve.add_point(Vector2(0.0, 1.0))
-	#t_curve.add_point(Vector2(0.5, 1.0))
 	t_curve.add_point(Vector2(1.0, 0.0))
 	return t_curve_texure
 
 
+# Particle emitter will spit out a_score number of particles and then turn off
 func emit_score_particles(a_score: int):
 	score_particles.amount = a_score
 	score_particles.emitting = true
 
 
 
-
+# TODO: Do we need fade effect?
 func remove_multi_effect(a_duration: float):
 	pass
 	if a_duration == 0.0:
-		set_multi_effect_visible(false)
-		#multi_effect.visible = false
+		on_remove_multi_effect_finished()
+		#set_multi_effect_visible(false)
 	else:
 		var t_tween = get_tree().create_tween()
-		t_tween.tween_method(set_multi_fade_parameter, 1.0, 0.0, 0.5)
+		t_tween.tween_method(_set_multi_fade_parameter, 1.0, 0.0, 0.5)
 		t_tween.finished.connect(on_remove_multi_effect_finished)
 
 
-func set_multi_fade_parameter(a_value: Variant):
+# Func for tween to ref
+func _set_multi_fade_parameter(a_value: Variant):
 	multi_effect.material.set_shader_parameter("fade", a_value)
 
 
 func on_remove_multi_effect_finished():
 	set_multi_effect_visible(false)
-	#multi_effect.visible = false
-	set_multi_fade_parameter(1.0)
+	_set_multi_fade_parameter(1.0)
 	
 
 func initialize(a_absract_square: AbstractSquare) -> void:
@@ -150,9 +138,6 @@ func _input_event(_viewport, event, _shape_idx):
 			if event.is_pressed():
 				square_clicked.emit(self)
 
-
-#func display_piece(a_type: Lists.PIECE_TYPE, a_color: Lists.COLOR):
-	#piece.texture = Textures.piece_texture(a_type, a_color)
 
 
 func display_piece(a_piece: GamePiece):
@@ -185,13 +170,11 @@ func modulate_piece_by_type(a_piece: Sprite2D, a_type: Lists.PIECE_TYPE):
 	var t_offset: float
 	t_offset = (2.5 - t_type_index as float) / 40.0
 	a_piece.modulate += Color(t_offset, t_offset, t_offset)
-	
+
 
 
 func set_multi_effect_visible(a_is_visible: bool):
 	multi_effect.visible = a_is_visible
-	print_debug(multi_effect.visible)
-
 
 
 # As it says
@@ -242,18 +225,7 @@ func bounce(a_magnitude: float, a_down: Vector2i):
 	rot_tween.tween_property(piece, 'rotation', t_rot + t_rot_saved, Constants.DOWN_BOUNCE_DURATION)
 
 
-#func down_bounce(a_piece: Sprite2D, a_down: Vector2i, a_distance: float):
-	#var down_tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
-	#var rot_tween = get_tree().create_tween()
-	#var t_rot_saved: float = a_piece.rotation
-	#var t_rot: float = randf_range(-0.05, 0.05)
-	##down_tween.tween_property(a_piece, 'position', Vector2(0, 2.0), Constants.DOWN_BOUNCE_DURATION)
-	#down_tween.tween_property(a_piece, 'position', 10.0 * a_distance * a_down, Constants.DOWN_BOUNCE_DURATION)
-	#down_tween.finished.connect(up_bounce.bind(a_piece, t_rot_saved))
-	#rot_tween.tween_property(a_piece, 'rotation', t_rot + t_rot_saved, Constants.DOWN_BOUNCE_DURATION)
-	
-	
-	
+
 func up_bounce(a_saved_rot: float):
 	var up_tween = get_tree().create_tween()#.set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_IN)
 	up_tween.tween_property(piece, 'position', Vector2.ZERO, Constants.UP_BOUNCE_DURATION)
