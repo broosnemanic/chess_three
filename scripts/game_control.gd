@@ -469,22 +469,18 @@ func do_multi_moves():
 
 
 func do_multi_move(a_move: Move):
-	var t_masks: Array[Vector2i] = multi_move_masks(a_move)
+	#var t_masks: Array[Vector2i] = multi_move_masks(a_move)
+	var t_masks: Array[Vector2i] = composition.multi_move_targets(a_move.piece.type, a_move.end, 1)
+	t_masks = rotated_vector_set(t_masks)
 	for i_mask: Vector2i in t_masks:
 		var t_move: Move = Move.init_from_move(a_move)
-		var t_coord: Vector2i = t_move.end + i_mask
+		#var t_coord: Vector2i = t_move.end + i_mask
+		var t_coord: Vector2i = i_mask
 		var t_taken: GamePiece = composition.piece_at(t_coord)
 		if t_taken == null: continue
 		t_move.end = t_coord
 		t_move.taken_piece = t_taken
 		do_multi_move_singlet(t_move)
-	#var t_coord: Vector2i = a_move.end + Vector2i(0, -1)
-	#var t_taken: GamePiece = composition.piece_at(t_coord)
-	#if t_taken == null: return
-	#var t_move: Move = Move.init_from_move(a_move)
-	#t_move.end = t_coord
-	#t_move.taken_piece = t_taken
-	#do_multi_move_singlet(t_move)
 
 
 
@@ -499,11 +495,31 @@ func do_multi_move_singlet(a_move: Move):
 # Returns set of offsets for a given piece/multi multi_move
 func multi_move_masks(a_move: Move) -> Array[Vector2i]:
 	var t_piece: GamePiece = a_move.piece
+	var t_set: Array[Vector2i] = []
 	match t_piece.type:
 		Lists.PIECE_TYPE.PAWN:
-			return rotated_vector_set([Vector2i(-1, -1), Vector2i(1, -1)])
+			t_set = [Vector2i(-1, -1), 
+					Vector2i(1, -1)]
+		Lists.PIECE_TYPE.ROOK:
+			t_set = [Vector2i(0, 1), 
+					Vector2i(0, -1), 
+					Vector2i(1, 0), 
+					Vector2i(-1, 0)]
+		Lists.PIECE_TYPE.KNIGHT:
+			t_set = [Vector2i(-1, -1), 
+					Vector2i(1, -1)]
+		Lists.PIECE_TYPE.PAWN:
+			t_set = [Vector2i(-1, -1), 
+					Vector2i(1, -1)]
+		Lists.PIECE_TYPE.PAWN:
+			t_set = [Vector2i(-1, -1), 
+					Vector2i(1, -1)]
+		Lists.PIECE_TYPE.PAWN:
+			t_set = [Vector2i(-1, -1), 
+					Vector2i(1, -1)]
 		_:
-			return rotated_vector_set([Vector2i(0, -1)])
+			t_set = [Vector2i(0, -1)]
+	return rotated_vector_set(t_set)
 
 
 

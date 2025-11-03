@@ -15,7 +15,14 @@ var selected_square: AbstractSquare		# Currently selected square, null if none
 var down: Vector2i						# Current direction that gravity is pulling
 var most_recent_player_move: Move				# The most recent move by player
 const default_down: Vector2i = Vector2i.DOWN
-
+const N0: Vector2i = Vector2i(0, -1)		# Remember down is positive y-direction
+const NE: Vector2i = Vector2i(1, -1)
+const E0: Vector2i = Vector2i(1, 0)
+const SE: Vector2i = Vector2i(1, 1)
+const S0: Vector2i = Vector2i(0, 1)
+const SW: Vector2i = Vector2i(-1, 1)
+const W0: Vector2i = Vector2i(-1, 0)
+const NW: Vector2i = Vector2i(-1, -1)
 
 
 # Setup to run on creation
@@ -583,3 +590,53 @@ func empty_coords() -> Array[Vector2i]:
 func fill(a_moveset: Array[Move]):
 	for i_move: Move in a_moveset:
 		put_piece_at(i_move.piece, i_move.end)
+
+
+# Set of coords in direction <a_dir> at a distance <a_dist> which are not out of bounds
+func safe_linear_set(a_start: Vector2i, a_dir: Vector2i, a_dist: int) -> Array[Vector2i]:
+	var t_set: Array[Vector2i] = []
+	if not is_valid_coords(a_start): return t_set
+	var t_coord = a_start
+	for i_dist: int in range(a_dist):
+		t_coord += a_dir
+		if not is_valid_coords(t_coord): break
+		t_set.append(t_coord)
+		i_dist += 1
+	return t_set
+
+
+func multi_move_targets(a_piece_type: Lists.PIECE_TYPE, a_start: Vector2i, a_multiplier: int) -> Array[Vector2i]:
+	var t_targets: Array[Vector2i]
+	match a_piece_type:
+		Lists.PIECE_TYPE.PAWN:
+			t_targets.append_array(safe_linear_set(a_start, NE, 1))
+			t_targets.append_array(safe_linear_set(a_start, NW, 1))
+		Lists.PIECE_TYPE.ROOK:
+			t_targets.append_array(safe_linear_set(a_start, N0, size))
+			t_targets.append_array(safe_linear_set(a_start, S0, size))
+		Lists.PIECE_TYPE.KNIGHT:
+			t_targets.append_array(safe_linear_set(a_start, NE, 1))
+			t_targets.append_array(safe_linear_set(a_start, NW, 1))
+		Lists.PIECE_TYPE.BISHOP:
+			t_targets.append_array(safe_linear_set(a_start, NE, size))
+			t_targets.append_array(safe_linear_set(a_start, SW, size))
+		Lists.PIECE_TYPE.QUEEN:
+			t_targets.append_array(safe_linear_set(a_start, N0, size))
+			t_targets.append_array(safe_linear_set(a_start, S0, size))
+			t_targets.append_array(safe_linear_set(a_start, E0, size))
+			t_targets.append_array(safe_linear_set(a_start, W0, size))
+		Lists.PIECE_TYPE.KING:
+			t_targets.append_array(safe_linear_set(a_start, N0, 1))
+			t_targets.append_array(safe_linear_set(a_start, S0, 1))
+			t_targets.append_array(safe_linear_set(a_start, E0, 1))
+			t_targets.append_array(safe_linear_set(a_start, W0, 1))
+			t_targets.append_array(safe_linear_set(a_start, NE, 1))
+			t_targets.append_array(safe_linear_set(a_start, SE, 1))
+			t_targets.append_array(safe_linear_set(a_start, NW, 1))
+			t_targets.append_array(safe_linear_set(a_start, SW, 1))
+		_:
+			t_targets.append_array(safe_linear_set(a_start, NE, 1))
+			t_targets.append_array(safe_linear_set(a_start, NW, 1))
+			t_targets.append_array(safe_linear_set(a_start, SE, 1))
+			t_targets.append_array(safe_linear_set(a_start, SW, 1))
+	return t_targets
