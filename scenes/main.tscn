@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bw0rhxbg2y5hf"]
+[gd_scene load_steps=13 format=3 uid="uid://bw0rhxbg2y5hf"]
 
 [ext_resource type="Script" uid="uid://c8fida5aajb62" path="res://scripts/main.gd" id="1_jfv3b"]
 [ext_resource type="Script" uid="uid://v6xxrbhcmp6j" path="res://scripts/game_control.gd" id="2_bgr0g"]
@@ -7,6 +7,12 @@
 [ext_resource type="Script" uid="uid://c18ky8te2qerf" path="res://scripts/multi_display.gd" id="4_tefeu"]
 [ext_resource type="Texture2D" uid="uid://brvq3aidddijr" path="res://textures/number_strip.png" id="5_tefeu"]
 [ext_resource type="Texture2D" uid="uid://mggmuvqtlx1u" path="res://textures/stone_wall.jpg" id="6_o6xl0"]
+[ext_resource type="Texture2D" uid="uid://bpk6vu31vyx0r" path="res://textures/board/DarkTile.png" id="8_85g3d"]
+[ext_resource type="Texture2D" uid="uid://cl7mjk7gt3mx2" path="res://textures/board/LightTile.png" id="8_tipki"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_85g3d"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_choun"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jyhfs"]
 bg_color = Color(0.815686, 0.415686, 0.847059, 0)
@@ -16,6 +22,8 @@ script = ExtResource("1_jfv3b")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
+offset = Vector2(0, 230.97)
+transform = Transform2D(1, 0, 0, 1, 0, 230.97)
 
 [node name="TopUIContainer" type="VBoxContainer" parent="CanvasLayer"]
 unique_name_in_owner = true
@@ -26,6 +34,7 @@ grow_horizontal = 2
 size_flags_horizontal = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/TopUIContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -51,16 +60,6 @@ size_flags_vertical = 3
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer2/VBoxContainer"]
 layout_mode = 2
 
-[node name="HighScoreLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer2/VBoxContainer/PanelContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 32)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 2.0
-bbcode_enabled = true
-text = "123"
-scroll_active = false
-
 [node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer2/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -68,12 +67,6 @@ size_flags_vertical = 3
 [node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="ScrollingCounter" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-script = ExtResource("4_tbgi4")
-digit_texture = ExtResource("5_tefeu")
 
 [node name="MultiContainer" type="VBoxContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer"]
 layout_mode = 2
@@ -110,22 +103,6 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="TurnsLeftLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(64, 0)
-layout_mode = 2
-bbcode_enabled = true
-text = "[font_size=42][center][color=green ]23[/color][/center][/font_size]"
-autowrap_mode = 0
-
-[node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
 [node name="HBoxContainer2" type="HBoxContainer" parent="CanvasLayer/TopUIContainer"]
 layout_mode = 2
 
@@ -142,6 +119,91 @@ size_flags_stretch_ratio = 3.0
 [node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/TopUIContainer"]
+layout_mode = 2
+
+[node name="NinePatchRect3" type="NinePatchRect" parent="CanvasLayer/TopUIContainer/PanelContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+texture = ExtResource("8_85g3d")
+region_rect = Rect2(5, 5, 118, 118)
+patch_margin_left = 5
+patch_margin_top = 5
+patch_margin_right = 5
+patch_margin_bottom = 5
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/TopUIContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_bottom = 7
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="HighScoreLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+scroll_active = false
+vertical_alignment = 1
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_85g3d")
+
+[node name="ScrollingCounter" type="HBoxContainer" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("4_tbgi4")
+digit_texture = ExtResource("5_tefeu")
+
+[node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_choun")
+
+[node name="Panel3" type="Panel" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer/HBoxContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_choun")
+
+[node name="TurnsLeftLabel" type="RichTextLabel" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+autowrap_mode = 0
+vertical_alignment = 1
+
+[node name="NinePatchRect2" type="NinePatchRect" parent="CanvasLayer/TopUIContainer/PanelContainer/MarginContainer"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+texture = ExtResource("8_tipki")
+draw_center = false
+region_rect = Rect2(4, 3.75, 121.369, 120.79)
+patch_margin_left = 5
+patch_margin_top = 5
+patch_margin_right = 5
+patch_margin_bottom = 5
+
+[node name="NinePatchRect" type="NinePatchRect" parent="CanvasLayer/TopUIContainer/PanelContainer"]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+texture = ExtResource("8_tipki")
+draw_center = false
+region_rect = Rect2(3.25, 3.25, 121, 121)
+patch_margin_left = 5
+patch_margin_top = 5
+patch_margin_right = 5
+patch_margin_bottom = 5
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
@@ -194,3 +256,35 @@ ignore_rotation = false
 [node name="Board" type="Node2D" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
 unique_name_in_owner = true
 script = ExtResource("3_ulksu")
+
+[node name="Shadow02" type="NinePatchRect" parent="GameControl/TopPanelContainer"]
+modulate = Color(0.28235295, 0.29803923, 0.28627452, 0.44313726)
+layout_mode = 2
+texture = ExtResource("8_85g3d")
+draw_center = false
+region_rect = Rect2(3.6386032, 4.1527405, 121.65901, 119.63136)
+patch_margin_left = 30
+patch_margin_top = 30
+patch_margin_right = 30
+patch_margin_bottom = 30
+
+[node name="Shadow01" type="NinePatchRect" parent="GameControl/TopPanelContainer"]
+modulate = Color(0.28235295, 0.29803923, 0.28627452, 0.5686275)
+layout_mode = 2
+texture = ExtResource("8_85g3d")
+draw_center = false
+region_rect = Rect2(3.6386032, 4.1527405, 121.65901, 119.63136)
+patch_margin_left = 26
+patch_margin_top = 26
+patch_margin_right = 26
+patch_margin_bottom = 26
+
+[node name="Frame" type="NinePatchRect" parent="GameControl/TopPanelContainer"]
+layout_mode = 2
+texture = ExtResource("8_tipki")
+draw_center = false
+region_rect = Rect2(3.6386032, 4.1527405, 121.65901, 119.63136)
+patch_margin_left = 20
+patch_margin_top = 20
+patch_margin_right = 20
+patch_margin_bottom = 20

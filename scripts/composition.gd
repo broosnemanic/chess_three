@@ -609,34 +609,72 @@ func multi_move_targets(a_piece_type: Lists.PIECE_TYPE, a_start: Vector2i, a_mul
 	var t_targets: Array[Vector2i]
 	match a_piece_type:
 		Lists.PIECE_TYPE.PAWN:
-			t_targets.append_array(safe_linear_set(a_start, NE, 1))
-			t_targets.append_array(safe_linear_set(a_start, NW, 1))
+			t_targets.append_array(safe_linear_set(a_start, NE, a_multiplier - 1))
+			t_targets.append_array(safe_linear_set(a_start, NW, a_multiplier - 1))
 		Lists.PIECE_TYPE.ROOK:
-			t_targets.append_array(safe_linear_set(a_start, N0, size))
-			t_targets.append_array(safe_linear_set(a_start, S0, size))
+			t_targets = rook_multi_move_targets(a_start, a_multiplier - 1)
 		Lists.PIECE_TYPE.KNIGHT:
-			t_targets.append_array(safe_linear_set(a_start, NE, 1))
-			t_targets.append_array(safe_linear_set(a_start, NW, 1))
+			t_targets = knight_multi_move_targets(a_start, a_multiplier - 1)
 		Lists.PIECE_TYPE.BISHOP:
-			t_targets.append_array(safe_linear_set(a_start, NE, size))
-			t_targets.append_array(safe_linear_set(a_start, SW, size))
+			t_targets = bishop_multi_move_targets(a_start, a_multiplier - 1)
 		Lists.PIECE_TYPE.QUEEN:
-			t_targets.append_array(safe_linear_set(a_start, N0, size))
-			t_targets.append_array(safe_linear_set(a_start, S0, size))
-			t_targets.append_array(safe_linear_set(a_start, E0, size))
-			t_targets.append_array(safe_linear_set(a_start, W0, size))
+			t_targets = king_multi_move_targets(a_start, a_multiplier - 1)
 		Lists.PIECE_TYPE.KING:
-			t_targets.append_array(safe_linear_set(a_start, N0, 1))
-			t_targets.append_array(safe_linear_set(a_start, S0, 1))
-			t_targets.append_array(safe_linear_set(a_start, E0, 1))
-			t_targets.append_array(safe_linear_set(a_start, W0, 1))
-			t_targets.append_array(safe_linear_set(a_start, NE, 1))
-			t_targets.append_array(safe_linear_set(a_start, SE, 1))
-			t_targets.append_array(safe_linear_set(a_start, NW, 1))
-			t_targets.append_array(safe_linear_set(a_start, SW, 1))
+			t_targets = king_multi_move_targets(a_start, a_multiplier - 1)
 		_:
-			t_targets.append_array(safe_linear_set(a_start, NE, 1))
-			t_targets.append_array(safe_linear_set(a_start, NW, 1))
-			t_targets.append_array(safe_linear_set(a_start, SE, 1))
-			t_targets.append_array(safe_linear_set(a_start, SW, 1))
+			t_targets = king_multi_move_targets(a_start, a_multiplier - 1)
+	return t_targets
+
+# TODO: Fix a_multiplier / distance mismatch
+func knight_multi_move_targets(a_start: Vector2i, a_distance: int) -> Array[Vector2i]:
+	var t_set: Array[Vector2i] = []
+	var t_targets: Array[Vector2i] = []
+	var t_dist: int = a_distance
+	while t_dist > 0:
+		if t_dist ==  1:
+			# Standard knight moves
+			t_set.append_array([Vector2i(1, -2) + a_start, 
+								Vector2i(2, -1) + a_start,
+								Vector2i(2, 1) + a_start,
+								Vector2i(1, 2) + a_start,
+								Vector2i(-1, 2) + a_start,
+								Vector2i(-2, 1) + a_start,
+								Vector2i(-2, -1) + a_start,
+								Vector2i(-1, -2) + a_start
+								])
+		if t_dist == 2:
+			t_set.append_array(king_multi_move_targets(a_start, 1))
+		if t_dist > 2:
+			t_set.append_array(rook_multi_move_targets(a_start, t_dist))
+		t_dist -= 1
+	for i_target: Vector2i in t_set:
+		if is_valid_coords(i_target):
+			t_targets.append(i_target)
+	return t_targets
+
+
+func king_multi_move_targets(a_start: Vector2i, a_distance: int) -> Array[Vector2i]:
+	var t_targets: Array[Vector2i] = []
+	t_targets.append_array(bishop_multi_move_targets(a_start, a_distance))
+	t_targets.append_array(rook_multi_move_targets(a_start, a_distance))
+	return t_targets
+
+
+
+func bishop_multi_move_targets(a_start: Vector2i, a_distance: int) -> Array[Vector2i]:
+	var t_targets: Array[Vector2i] = []
+	t_targets.append_array(safe_linear_set(a_start, NE, a_distance))
+	t_targets.append_array(safe_linear_set(a_start, SW, a_distance))
+	t_targets.append_array(safe_linear_set(a_start, NW, a_distance))
+	t_targets.append_array(safe_linear_set(a_start, SE, a_distance))
+	return t_targets
+
+
+
+func rook_multi_move_targets(a_start: Vector2i, a_distance: int) -> Array[Vector2i]:
+	var t_targets: Array[Vector2i] = []
+	t_targets.append_array(safe_linear_set(a_start, N0, a_distance))
+	t_targets.append_array(safe_linear_set(a_start, S0, a_distance))
+	t_targets.append_array(safe_linear_set(a_start, E0, a_distance))
+	t_targets.append_array(safe_linear_set(a_start, W0, a_distance))
 	return t_targets

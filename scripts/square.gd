@@ -53,11 +53,11 @@ func multi_angles(_a_multi: int, a_piece_type: Lists.PIECE_TYPE) -> Array[float]
 		Lists.PIECE_TYPE.ROOK:
 			return [0.0, 90.0, 180.0, 270.0]		
 		Lists.PIECE_TYPE.KNIGHT:
-			return [-30.0, -60.0, -120.0, -150.0]
+			return [30.0, 60.0, 120.0, 150.0, -30.0, -60.0, -120.0, -150.0]
 		Lists.PIECE_TYPE.BISHOP:
-			return [-45.0, -225.0]
+			return [45.0, 225.0, -45.0, -225.0]
 		Lists.PIECE_TYPE.QUEEN:
-			return [45.0, 135.0, 225.0, 315.0]
+			return [0.0, 90.0, 180.0, 270.0, 45.0, 135.0, 225.0, 315.0]
 		Lists.PIECE_TYPE.KING:
 			return [0.0, 90.0, 180.0, 270.0, 45.0, 135.0, 225.0, 315.0]
 		_:

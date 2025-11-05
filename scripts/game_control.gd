@@ -159,10 +159,11 @@ func on_lose():
 
 
 func update_turns_left_label():
-	var t_text: String = str(level_data.turn_count_max - turn_index)
-	t_text = BBUtil.at_size(t_text, 24)
-	t_text = BBUtil.at_color(t_text, "green")
-	t_text = BBUtil.at_centered(t_text)
+	#var t_text: String = str(level_data.turn_count_max - turn_index)
+	var t_text: String = BBString.new(str(level_data.turn_count_max - turn_index)).center().b.size(24).color("dark gray").string
+	#t_text = BBUtil.at_size(t_text, 24)
+	#t_text = BBUtil.at_color(t_text, "green")
+	#t_text = BBUtil.at_centered(t_text)
 	%TurnsLeftLabel.text = t_text
 
 
@@ -470,7 +471,7 @@ func do_multi_moves():
 
 func do_multi_move(a_move: Move):
 	#var t_masks: Array[Vector2i] = multi_move_masks(a_move)
-	var t_masks: Array[Vector2i] = composition.multi_move_targets(a_move.piece.type, a_move.end, 1)
+	var t_masks: Array[Vector2i] = composition.multi_move_targets(a_move.piece.type, a_move.end, a_move.piece.multiplier)
 	t_masks = rotated_vector_set(t_masks)
 	for i_mask: Vector2i in t_masks:
 		var t_move: Move = Move.init_from_move(a_move)
