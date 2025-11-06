@@ -56,7 +56,7 @@ func load_level(a_level_data: LevelData):
 
 
 func setup_board():
-	position_viewport()
+	#position_viewport()
 	board.clear()
 	board.setup(composition._abst_board)
 	board.display_piece_set(composition._internal)
@@ -89,13 +89,13 @@ func load_score_data():
 
 
 func position_viewport():
-	var t_width: float = ProjectSettings.get_setting("display/window/size/viewport_width")
-	var t_height: float = ProjectSettings.get_setting("display/window/size/viewport_height")
+	var t_width: float = ProjectSettings.get_setting("display/window/size/viewport_width") * 0.9
+	var t_height: float = ProjectSettings.get_setting("display/window/size/viewport_height") * 0.9
 	var t_size: Vector2 = Vector2(t_width, t_width)
 	t_height = (t_height / 2.0) - t_width
 	top_container.size = Vector2(t_width, t_width)
 	top_container.position = Vector2(- t_width / 2.0, t_height)
-	%BoardSubViewport.size = t_size
+	#%BoardSubViewport.size = t_size
 
 
 func position_board():

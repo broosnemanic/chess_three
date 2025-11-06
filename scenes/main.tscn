@@ -22,16 +22,15 @@ script = ExtResource("1_jfv3b")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = -1
-offset = Vector2(0, 230.97)
-transform = Transform2D(1, 0, 0, 1, 0, 230.97)
 
 [node name="TopUIContainer" type="VBoxContainer" parent="CanvasLayer"]
 unique_name_in_owner = true
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 64.0
+offset_bottom = 146.0
 grow_horizontal = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/TopUIContainer"]
 visible = false
@@ -205,25 +204,28 @@ patch_margin_top = 5
 patch_margin_right = 5
 patch_margin_bottom = 5
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="HBoxContainer3" type="HBoxContainer" parent="CanvasLayer/TopUIContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 
-[node name="GameControl" type="Node" parent="."]
-script = ExtResource("2_bgr0g")
+[node name="Panel" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
 
-[node name="TopPanelContainer" type="PanelContainer" parent="GameControl"]
+[node name="TopPanelContainer" type="PanelContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer3"]
 unique_name_in_owner = true
-offset_right = 1000.0
-offset_bottom = 826.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
+custom_minimum_size = Vector2(720, 720)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="TextureRect" type="TextureRect" parent="GameControl/TopPanelContainer"]
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer"]
 layout_mode = 2
 texture = ExtResource("6_o6xl0")
 expand_mode = 2
 stretch_mode = 6
 
-[node name="BoardMarginContainer" type="MarginContainer" parent="GameControl/TopPanelContainer"]
+[node name="BoardMarginContainer" type="MarginContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/margin_left = 20
@@ -231,33 +233,33 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="ViewportPanelContainer" type="PanelContainer" parent="GameControl/TopPanelContainer/BoardMarginContainer"]
+[node name="ViewportPanelContainer" type="PanelContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer/BoardMarginContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_jyhfs")
 
-[node name="BoardViewportContainer" type="SubViewportContainer" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer"]
+[node name="BoardViewportContainer" type="SubViewportContainer" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 stretch = true
 
-[node name="BoardSubViewport" type="SubViewport" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer"]
+[node name="BoardSubViewport" type="SubViewport" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer"]
 unique_name_in_owner = true
 transparent_bg = true
 handle_input_locally = false
 physics_object_picking = true
-size = Vector2i(960, 786)
+size = Vector2i(680, 680)
 render_target_update_mode = 4
 
-[node name="BoardCamera" type="Camera2D" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
+[node name="BoardCamera" type="Camera2D" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
 unique_name_in_owner = true
 ignore_rotation = false
 
-[node name="Board" type="Node2D" parent="GameControl/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
+[node name="Board" type="Node2D" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer/BoardMarginContainer/ViewportPanelContainer/BoardViewportContainer/BoardSubViewport"]
 unique_name_in_owner = true
 script = ExtResource("3_ulksu")
 
-[node name="Shadow02" type="NinePatchRect" parent="GameControl/TopPanelContainer"]
+[node name="Shadow02" type="NinePatchRect" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer"]
 modulate = Color(0.28235295, 0.29803923, 0.28627452, 0.44313726)
 layout_mode = 2
 texture = ExtResource("8_85g3d")
@@ -268,7 +270,7 @@ patch_margin_top = 30
 patch_margin_right = 30
 patch_margin_bottom = 30
 
-[node name="Shadow01" type="NinePatchRect" parent="GameControl/TopPanelContainer"]
+[node name="Shadow01" type="NinePatchRect" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer"]
 modulate = Color(0.28235295, 0.29803923, 0.28627452, 0.5686275)
 layout_mode = 2
 texture = ExtResource("8_85g3d")
@@ -279,7 +281,7 @@ patch_margin_top = 26
 patch_margin_right = 26
 patch_margin_bottom = 26
 
-[node name="Frame" type="NinePatchRect" parent="GameControl/TopPanelContainer"]
+[node name="Frame" type="NinePatchRect" parent="CanvasLayer/TopUIContainer/HBoxContainer3/TopPanelContainer"]
 layout_mode = 2
 texture = ExtResource("8_tipki")
 draw_center = false
@@ -288,3 +290,12 @@ patch_margin_left = 20
 patch_margin_top = 20
 patch_margin_right = 20
 patch_margin_bottom = 20
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/TopUIContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="GameControl" type="Node" parent="."]
+script = ExtResource("2_bgr0g")
