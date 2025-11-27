@@ -5,6 +5,15 @@ enum PIECE_TYPE{PAWN, ROOK, KNIGHT, BISHOP, QUEEN, KING , EMPTY, STONE}
 enum SQUARE_TYPE{NORMAL, CLIP, HOLE, STONE, ICE}
 enum MOVE_TYPE{TAKE, MATCH, SLIDE, FILL}
 enum LEVEL_TYPE{POINTS, THREE_KINGS}
+enum POINT_MILESTONE{PAR, ONE_STAR, TWO_STAR, THREE_STAR}
+
+const STAR_FACTORS: Dictionary[POINT_MILESTONE, float] = {	POINT_MILESTONE.PAR : 1.0,
+															POINT_MILESTONE.ONE_STAR : 2.0,
+															POINT_MILESTONE.TWO_STAR : 3.0,
+															POINT_MILESTONE.THREE_STAR : 4.0
+															}
+
+
 
 func random_piece_type() -> PIECE_TYPE:
 	var t_index: int = randi_range(0, 5) 

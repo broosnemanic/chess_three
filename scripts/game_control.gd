@@ -11,9 +11,19 @@ extends Node
 @onready var multi_display: RichTextLabel = %MultiDisplay
 @onready var counter: ScrollingCounter = %ScrollingCounter
 @onready var high_score_label: RichTextLabel = %HighScoreLabel
+@onready var rotate_cw_button: TextureButton = %CWButton
+@onready var rotate_ccw_button: TextureButton = %CCWButton
+@onready var score_progressbar: ProgressBar = %ScoreProgressBar
+@onready var turns_progressbar: ProgressBar = %TurnsProgressBar
+@onready var star00: TextureRect = %Star00
+@onready var star01: TextureRect = %Star01
+@onready var star02: TextureRect = %Star02
+@onready var star_scroll_container: ScrollContainer = %StarScrollContainer
 @onready var physics_piece_prefab = preload("res://scenes/physics_piece.tscn")
 @onready var popup_prefab = preload("res://scenes/popup_message.tscn")
 @onready var message_box_prefab = preload("res://scenes/meassge_box.tscn")
+@onready var filled_star: Resource = preload("res://textures/UI/filled_star_sm.png")
+@onready var unfilled_star: Resource = preload("res://textures/UI/unfilled_star_sm.png")
 
 @onready var level_data: LevelData = preload("res://levels/level_data_01.tres")
 
@@ -34,6 +44,8 @@ var high_score: int					# Last high score for loaded level
 var message_box: PanelContainer
 var multi_moves: Array[Move]		# List of moves that result in a multi_move
 									# E.g. multi_gem takes, is taken, or participates in a match
+var score_milestones: Dictionary[Lists.POINT_MILESTONE, bool] = {}
+
 
 
 func _ready():
@@ -41,19 +53,108 @@ func _ready():
 	counter.chunk_rate = 1.0
 	message_box = message_box_prefab.instantiate()
 	%MessageBoxContainer.add_child(message_box)
+	rotate_cw_button.button_up.connect(rotate_board.bind(false))
+	rotate_ccw_button.button_up.connect(rotate_board.bind(true))
 	set_level(1)
+	#%StarScrollContainer.set_deferred("scroll_vertical", 84)
 
 
 func load_level(a_level_data: LevelData):
 	level_data = a_level_data
 	composition = Composition._init_from_level_data(level_data)
 	match_finder = MatchFinder.new(composition)
+	turn_index = 0
+	board_rotation = 0
+	board_camera.rotation = 0.0
 	setup_board()
 	slide(composition, composition.down)
 	load_score_data()
 	display_high_score(high_score)
 	update_turns_left_label()
+	setup_progressbars()
+	for i_key: Lists.POINT_MILESTONE in Lists.POINT_MILESTONE.values():
+		score_milestones[i_key] = false
 
+
+func setup_progressbars():
+	score_progressbar.max_value = level_data.min_point_goal
+	score_progressbar.value_changed.connect(on_point_milestone)
+	turns_progressbar.max_value = level_data.turn_count_max
+	turns_progressbar.value = turns_progressbar.max_value
+	var t_style: StyleBoxFlat = StyleBoxFlat.new()
+	t_style.bg_color = Constants.TURNS_BAR_START_COLOR
+	turns_progressbar.add_theme_stylebox_override("fill", t_style)
+
+
+func on_point_milestone(_a_points: int):
+	if score_progressbar.value < score_progressbar.max_value : return
+	var t_container: PanelContainer = score_progressbar.get_parent()
+	if not score_milestones[Lists.POINT_MILESTONE.PAR] and is_in_milestone_range(Lists.POINT_MILESTONE.PAR):
+		var t_height: float = star_scroll_container.get_child(0).size.y - star_scroll_container.size.y
+		score_milestones[Lists.POINT_MILESTONE.PAR] = true
+		var t_tween: Tween = get_tree().create_tween()
+		t_tween.tween_property(star_scroll_container, "scroll_vertical", t_height, 1.0)
+		await get_tree().create_timer(0.5).timeout
+		t_tween = get_tree().create_tween()
+		t_tween.tween_property(score_progressbar, "max_value", 2 * level_data.min_point_goal, 1.0)
+		t_tween = get_tree().create_tween()
+		t_tween.tween_property(t_container, "size_flags_stretch_ratio", 0.85, 1.0)
+
+	elif not score_milestones[Lists.POINT_MILESTONE.ONE_STAR] and is_in_milestone_range(Lists.POINT_MILESTONE.ONE_STAR):
+		score_milestones[Lists.POINT_MILESTONE.ONE_STAR] = true
+		await get_tree().create_timer(1.5).timeout
+		var t_tween: Tween = get_tree().create_tween()
+		t_tween.tween_property(score_progressbar, "max_value", 3 * level_data.min_point_goal, 1.0)
+		t_tween = get_tree().create_tween()
+		t_tween.tween_method(modulate_texture_rect.bind(star00), 0.0, 1.0, 1.0)
+		t_tween = get_tree().create_tween()
+		t_tween.tween_property(t_container, "size_flags_stretch_ratio", 0.70, 1.0)
+	elif not score_milestones[Lists.POINT_MILESTONE.TWO_STAR] and is_in_milestone_range(Lists.POINT_MILESTONE.TWO_STAR):
+		score_milestones[Lists.POINT_MILESTONE.TWO_STAR] = true
+		await get_tree().create_timer(1.5).timeout
+		var t_tween: Tween = get_tree().create_tween()
+		t_tween.tween_property(score_progressbar, "max_value", 4 * level_data.min_point_goal, 1.0)
+		t_tween = get_tree().create_tween()
+		t_tween.tween_method(modulate_texture_rect.bind(star01), 0.0, 1.0, 1.0)
+		#var t_container: PanelContainer = score_progressbar.get_parent()
+		t_tween = get_tree().create_tween()
+		t_tween.tween_property(t_container, "size_flags_stretch_ratio", 0.55, 1.0)
+	elif not score_milestones[Lists.POINT_MILESTONE.THREE_STAR] and is_in_milestone_range(Lists.POINT_MILESTONE.THREE_STAR):
+		score_milestones[Lists.POINT_MILESTONE.THREE_STAR] = true
+		await get_tree().create_timer(1.5).timeout
+		var t_tween: Tween = get_tree().create_tween()
+		t_tween.tween_property(score_progressbar, "max_value", 4 * level_data.min_point_goal, 1.0)
+		t_tween = get_tree().create_tween()
+		t_tween.tween_method(modulate_texture_rect.bind(star02), 0.0, 1.0, 1.0)
+
+
+
+func is_in_milestone_range(a_milestone: Lists.POINT_MILESTONE) -> bool:
+	var t_next: Lists.POINT_MILESTONE
+	var t_milestone: Lists.POINT_MILESTONE
+	var t_min: int = level_data.min_point_goal
+	match a_milestone:
+		Lists.POINT_MILESTONE.PAR:
+			t_next = Lists.POINT_MILESTONE.ONE_STAR
+			t_milestone = Lists.POINT_MILESTONE.PAR
+			return score >= Lists.STAR_FACTORS[t_milestone] * t_min and score < Lists.STAR_FACTORS[t_next] * t_min
+		Lists.POINT_MILESTONE.ONE_STAR:
+			t_next = Lists.POINT_MILESTONE.TWO_STAR
+			t_milestone = Lists.POINT_MILESTONE.ONE_STAR
+			return score >= Lists.STAR_FACTORS[t_milestone] * t_min and score < Lists.STAR_FACTORS[t_next] * t_min
+		Lists.POINT_MILESTONE.TWO_STAR:
+			t_next = Lists.POINT_MILESTONE.THREE_STAR
+			t_milestone = Lists.POINT_MILESTONE.TWO_STAR
+			return score >= Lists.STAR_FACTORS[t_milestone] * t_min and score < Lists.STAR_FACTORS[t_next] * t_min
+		Lists.POINT_MILESTONE.THREE_STAR:
+			t_milestone = Lists.POINT_MILESTONE.THREE_STAR
+			return score >= Lists.STAR_FACTORS[t_milestone] * t_min
+	return false
+
+
+	
+func modulate_texture_rect(a_alpha: float, a_texture: TextureRect):
+	a_texture.modulate = Color(1.0, 1.0, 1.0, a_alpha)
 
 func setup_board():
 	#position_viewport()
@@ -75,6 +176,14 @@ func save_score_data():
 		save.store_var(score_data)
 		save.flush()
 		print_debug("Saved: " + str(score_data))
+
+
+func reset_high_scores():
+	for i_key: int in score_data.keys():
+		score_data[i_key] = 0
+	var save = FileAccess.open(save_path, FileAccess.WRITE)
+	save.store_var(score_data)
+	save.flush()
 
 
 func load_score_data():
@@ -119,6 +228,8 @@ func _input(event):
 			set_level(2)
 		if event.keycode == KEY_3:
 			set_level(3)
+		if event.keycode == KEY_X:
+			reset_high_scores()
 
 
 func set_level(a_level_index: int):
@@ -141,8 +252,50 @@ func display_high_score(a_score: int):
 func increment_turn_index():
 	turn_index += 1
 	update_turns_left_label()
+	animate_turn_index_increment()
 	if turn_index >= level_data.turn_count_max:
 		on_lose()
+
+
+
+func animate_turn_index_increment():
+	var t_tween: Tween = get_tree().create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
+	var t_value: float = (level_data.turn_count_max - turn_index) as float
+	t_tween.tween_property(turns_progressbar, "value", t_value - 0.2, Constants.DOWN_BOUNCE_DURATION)
+	t_tween.finished.connect(turn_progress_bar_up_bounce)
+	turn_progress_bar_animate_color()
+
+
+
+func turn_progress_bar_up_bounce():
+	var t_tween: Tween = get_tree().create_tween()
+	var t_value: float = (level_data.turn_count_max - turn_index) as float
+	t_tween.tween_property(turns_progressbar, "value", t_value, Constants.UP_BOUNCE_DURATION)
+
+
+func turn_progress_bar_animate_color():
+	var t_tween: Tween = get_tree().create_tween()
+	var t_progress: float = turn_index as float / level_data.turn_count_max as float
+	var t_start: Color = turns_progressbar.get_theme_stylebox("fill").bg_color
+	var t_color: Color
+	var t_lerp: float
+	var t_end: Color
+	if t_progress <= 0.5:
+		t_color = Constants.TURNS_BAR_MID_COLOR
+		t_lerp = 2.0 * t_progress
+		t_end = Constants.TURNS_BAR_START_COLOR.lerp(t_color, t_lerp)
+	else:
+		t_color = Constants.TURNS_BAR_END_COLOR
+		t_lerp = 2.0 * (t_progress - 0.5)
+		t_end = Constants.TURNS_BAR_MID_COLOR.lerp(t_color, t_lerp)
+	t_tween.tween_method(turn_progress_bar_update_color, t_start, t_end, Constants.DOWN_BOUNCE_DURATION)
+	
+	
+
+func turn_progress_bar_update_color(a_color: Color):
+	var t_style: StyleBoxFlat = StyleBoxFlat.new()
+	t_style.bg_color = a_color
+	turns_progressbar.add_theme_stylebox_override("fill", t_style)
 
 
 func is_win_condition_met() -> bool:
@@ -421,9 +574,17 @@ func remove_multi(a_move: Move):
 func process_take_score(a_move: Move):
 	var t_points: int = take_score(a_move)
 	score += t_points
-	counter.display_points(t_points)
+	add_score(t_points)
+	#counter.display_points(t_points)
 	display_floating_points([a_move.end], t_points, a_move.piece.multiplier)
 	display_points_particles([a_move.end], t_points)
+
+
+func add_score(a_score: int):
+	counter.display_points(a_score)
+	var t_tween: Tween = get_tree().create_tween()
+	t_tween.tween_property(score_progressbar, "value", score_progressbar.value + a_score, 0.5)
+
 
 
 func take_score(a_move: Move) -> int:
@@ -631,7 +792,8 @@ func update_score_from_matches(a_matches: Array[Array]):
 		var t_multi: int = piece_score_multi(composition.piece_at(i_set[0]))
 		t_points *= t_multi
 		score += t_points
-		counter.display_points(t_points)
+		#counter.display_points(t_points)
+		add_score(t_points)
 		display_floating_points(i_set, t_points, t_multi)
 		display_points_particles(i_set, t_points)
 	score_data[loaded_level_index] = max(score_data[loaded_level_index], score)

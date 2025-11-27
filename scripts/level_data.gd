@@ -9,3 +9,4 @@ class_name LevelData
 @export var stones: Array[Vector2i]
 @export var holes: Array[Vector2i]
 @export var is_random_board: bool
+@export var min_point_goal: int

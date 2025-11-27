@@ -4,12 +4,6 @@
 
 [resource]
 script = ExtResource("1_c14oh")
-piece_seed = 0
-board_seed = 0
 size = 8
-level_type = 0
-turn_count_max = 20
-stones = Array[Vector2i]([])
-holes = Array[Vector2i]([])
-is_random_board = false
+min_point_goal = 30
 metadata/_custom_type_script = "uid://belp6enjrjms"
